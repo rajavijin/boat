@@ -1,0 +1,143 @@
+<ion-view title="Addtrip" ng-controller="HomeCtrl">
+<ion-content>
+<div class="list">
+  <label class="item item-input">
+    <span class="input-label">From</span>
+    <input type="date" ng-model="addtrip.from">
+  </label>
+  <label class="item item-input">
+    <span class="input-label">To</span>
+    <input type="date" ng-model="addtrip.to">
+  </label>
+<label class="item item-input">
+    <span class="input-label">Income</span>
+    <input type="text" ng-model="addtrip.income" placeholder="2000">
+  </label>
+
+<label class="item item-input">
+    <span class="input-label">Owner%</span>
+    <input type="text" ng-model="addtrip.owner" placeholder="2000">
+  </label>
+  <label class="item item-input">
+    <span class="input-label">Worker%</span>
+    <input type="text" ng-model="addtrip.worker" placeholder="10">
+  </label>
+  <label class="item item-input">
+    <span class="input-label">Petrol</span>
+    <input type="text" ng-model="addtrip.petrol" placeholder="2000">
+  </label>
+  <label class="item item-input">
+    <span class="input-label">Ice</span>
+    <input type="text" ng-model="addtrip.ice" placeholder="200">
+  </label>
+  <label class="item item-input">
+    <span class="input-label">net</span>
+    <input type="text" ng-model="addtrip.net" placeholder="200">
+  </label>
+   <label class="item item-input">
+    <span class="input-label">Food</span>
+    <input type="text" ng-model="addtrip.food" placeholder="200">
+  </label>
+  <label class="item item-input">
+    <span class="input-label">Extra</span>
+    <input type="text" ng-model="addtrip.extra" placeholder="200">
+  </label>
+  <label class="item item-input">
+    <span class="input-label">Bata/Day</span>
+    <input type="text" ng-model="addtrip.bata" placeholder="200">
+  </label>
+    <label class="item item-divider">
+    <span class="input-label">Members</span>
+  </label>   
+  <ul class="list">
+<li class="item item-checkbox">
+     <label class="checkbox">
+       <input type="checkbox">
+     </label>
+     Captain
+  </li>
+  <li class="item item-checkbox">
+     <label class="checkbox">
+       <input type="checkbox">
+     </label>
+     Vice-Captain
+  </li>
+  <li class="item item-checkbox">
+     <label class="checkbox">
+       <input type="checkbox">
+     </label>
+     Worker1
+  </li>
+  <li class="item item-checkbox">
+     <label class="checkbox">
+       <input type="checkbox">
+     </label>
+     Worker2
+  </li>
+  <li class="item item-checkbox">
+     <label class="checkbox">
+       <input type="checkbox">
+     </label>
+     Worker3
+  </li>
+  <li class="item item-checkbox">
+     <label class="checkbox">
+       <input type="checkbox">
+     </label>
+     Worker4
+  </li>
+  <li class="item item-checkbox">
+     <label class="checkbox">
+       <input type="checkbox">
+     </label>
+     Worker5
+  </li>
+  <li class="item item-checkbox">
+     <label class="checkbox">
+       <input type="checkbox">
+     </label>
+     Worker6
+  </li>
+  <li class="item item-checkbox">
+     <label class="checkbox">
+       <input type="checkbox">
+     </label>
+     Worker7
+  </li>
+  <li class="item item-checkbox">
+     <label class="checkbox">
+       <input type="checkbox">
+     </label>
+     Worker8
+  </li>
+  <li class="item item-checkbox">
+     <label class="checkbox">
+       <input type="checkbox">
+     </label>
+     Worker9
+  </li>
+  <li class="item item-checkbox">
+     <label class="checkbox">
+       <input type="checkbox">
+     </label>
+     Worker10
+  </li>
+  <li class="item item-checkbox">
+     <label class="checkbox">
+       <input type="checkbox">
+     </label>
+     Worker11
+  </li>
+  <li class="item item-checkbox">
+     <label class="checkbox">
+       <input type="checkbox">
+     </label>
+     Worker12
+  </li></ul>
+
+ </div>
+<div class="padding">
+        <button class="button button-block button-positive activated" ng-click='submit()'>Submit</button>
+</div>
+ </ion-content>
+</ion-modal-view>

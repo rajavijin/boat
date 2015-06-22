@@ -1,0 +1,99 @@
+<ion-view title="Addusers" ng-controller="HomeCtrl">
+  <ion-content>
+    <div class="list">
+  <label class="item item-input">
+    <span class="input-label">Username</span>
+    <input type="text" ng-model="addusers.email">
+  </label>
+  <label class="item item-input">
+    <span class="input-label">Password</span>
+    <input type="password" ng-model="addusers.password">
+  </label>
+   <label class="item item-input">
+    <span class="input-label">confirm password</span>
+    <input type="password" ng-model="addusers.confirm">
+  </label>
+  </label>
+    <label class="item item-divider">
+    <span class="input-label">Roles</span>
+  </label> 
+<ul class="list">
+  <ul class="list">
+<li class="item item-checkbox">
+     <label class="checkbox">
+       <input type="checkbox">
+     </label>
+     Authenticated User
+  </li>
+  <ul class="list">
+<li class="item item-checkbox">
+     <label class="checkbox">
+       <input type="checkbox">
+     </label>
+     Administrator
+  </li>
+  <ul class="list">
+<li class="item item-checkbox">
+     <label class="checkbox">
+       <input type="checkbox">
+     </label>
+     Captain
+  </li>
+  <ul class="list">
+<li class="item item-checkbox">
+     <label class="checkbox">
+       <input type="checkbox">
+     </label>
+     Vice-Captain
+  </li>
+  <li class="item item-checkbox">
+     <label class="checkbox">
+       <input type="checkbox">
+     </label>
+     Cook
+  </li>
+   <label class="item item-divider">
+    <span class="input-label">Main profile</span>
+  </label>
+  <label class="item item-input">
+    <span class="input-label">Name</span>
+    <input type="password" ng-model="addusers.name">
+  </label>
+  <label class="item item-input">
+    <span class="input-label">Mobile</span>
+    <input type="password" ng-model="addusers.mobile">
+  </label>
+  <label class="item item-input">
+    <span class="input-label">Address</span>
+    <input type="password" ng-model="addusers.address">
+  </label>
+  <label class="item item-input">
+    <span class="input-label">Salary level</span>
+    <input type="password" ng-model="addusers.salary">
+  </label>
+  <label class="item item-input">
+    <span class="input-label">Remaining balance</span>
+    <input type="password" ng-model="addusers.balance">
+  </label>
+<label class="item item-divider">
+    <span class="input-label">Languages</span>
+  </label> 
+<ul class="list">
+<li class="item item-checkbox">
+     <label class="checkbox">
+       <input type="checkbox">
+     </label>
+     English
+  </li>
+  <li class="item item-checkbox">
+     <label class="checkbox">
+       <input type="checkbox">
+     </label>
+     Tamil
+  </li>
+  <div class="padding">
+  <button class="button button-block button-positive" ng-click="created()">
+  create new account
+</button>
+  </ion-content>
+</ion-view>
