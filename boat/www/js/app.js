@@ -78,13 +78,9 @@ angular.module('starter', ['ionic', 'starter.controllers'])
       }
     }
   })
-.state('app.logout', {
-      url: "/logout",
-      views: {
-        'menuContent': {
-          templateUrl: "templates/logout.html",
-          controller: 'LogoutCtrl'
-        }
-      }
-    })
+  .state('logout', {
+      url: '/logout',
+      templateUrl: 'templates/home.html',
+  });
+  $urlRouterProvider.otherwise('/home');
 });

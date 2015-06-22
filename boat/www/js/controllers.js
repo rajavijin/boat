@@ -1,7 +1,16 @@
 angular.module('starter.controllers', ['starter.services'])
 
 .controller('AppCtrl', function($scope, $ionicModal, $timeout) {
-  
+  user = JSON.parse(localStorage.getItem('user')) || user;
+  $scope.username = user.name;
+  $scope.uid = localStorage.getItem('uid') || '';
+  if($scope.uid) {
+    $scope.authorized = true;
+    $scope.menuLinks = MyService.getMenus();   
+  } else {
+    $scope.authorized = false;
+    $scope.menuLinks = {"Links":[{}]};
+  }
   // With the new view caching in Ionic, Controllers are only called
   // when they are recreated or on app start, instead of every page change.
   // To listen for when this page is active (for example, to refresh data),
@@ -76,4 +85,13 @@ angular.module('starter.controllers', ['starter.services'])
     }
     console.log("user details", $scope.user);
   }
+})
+.controller('LogoutCtrl', function($scope, $http, $state) {
+    delete $http.defaults.headers.common.Authorization;
+    console.log("Logging out:");
+    localStorage.removeItem('uid');
+    localStorage.removeItem("DashParam");
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    $state.go("home", {}, {reload: true});
 });
