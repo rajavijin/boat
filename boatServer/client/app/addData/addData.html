@@ -1,0 +1,44 @@
+<div ng-include="'components/navbar/navbar.html'"></div>
+
+<div class="container">
+<!-- 	<table  ng-if="updatedItems.length > 0" class="table table-striped table-bordered">
+	<tr><th>Student</th><th>SiteID</th><th>Status</th></tr>
+	<tr ng-repeat="(i, v) in updatedItems"><td>{{v.WANIP}}</td><td>{{v.SiteID}}</td><td>{{v.Status}}</td></tr></table> -->
+	<form role="form" ng-submit="csvImport(csv.result)">
+	   <div class="form-group">
+	      <label for="name">Boat name</label>
+	      <input required="true" type="text" class="form-control" ng-model="boat.boatname" 
+	         placeholder="Enter boat name">
+	   </div>
+	   <div class="form-group">
+	      <label for="name">Owner name</label>
+	      <input required="true" type="text" class="form-control" ng-model="boat.owner" 
+	         placeholder="Enter owner name">
+	   </div>
+	   <div class="form-group">
+	      <label for="name">Mobile</label>
+	      <input required="true" type="text" class="form-control" ng-model="boat.mobile" 
+	         placeholder="Enter owner contact number">
+	   </div>	   
+	   <div class="form-group required">
+	      <label for="passmark">Owner Percentage</label>
+	      <input required="true" type="integer" class="form-control" ng-model="boat.ownerpercentage" 
+	         placeholder="Enter Owner %">
+	   </div>	   
+	   <div class="form-group required">
+	      <label for="passmark">Worker Percentage</label>
+	      <input required="true" type="integer" class="form-control" ng-model="boat.workerpercentage" 
+	         placeholder="Enter worker %">
+	   </div>
+	   <div class="form-group required">
+	      <label for="passmark">Beta/day</label>
+	      <input required="true" type="integer" class="form-control" ng-model="boat.betaperday" 
+	         placeholder="Enter beta per day">
+	   </div>	   
+	   <div class="form-group">
+	      <label for="inputfile">Import all users</label>
+	      	<ng-csv-import content="csv.content" header="true" separator=";" result="csv.result"></ng-csv-import>
+	   </div>
+	   <button type="submit" class="btn btn-default">Submit</button>
+	</form>	
+</div>
