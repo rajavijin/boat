@@ -16,6 +16,10 @@ var TripSchema = new Schema({
   food: Number,
   extra: Number,
   members: Array,
+  balance: Number,
+  ownerincome: Number,
+  workerincome: Number,
+  totalspending: Number,
   active: Boolean
 });
 

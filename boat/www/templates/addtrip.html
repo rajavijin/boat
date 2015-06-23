@@ -1,140 +1,62 @@
-<ion-view title="Addtrip" ng-controller="HomeCtrl">
+<ion-view title="Addtrip" ng-controller="AddtripCtrl">
 <ion-content>
 <div class="list">
   <label class="item item-input">
     <span class="input-label">From</span>
-    <input type="date" ng-model="addtrip.from">
+    <input type="date" ng-model="addtrip.startdate">
   </label>
   <label class="item item-input">
     <span class="input-label">To</span>
-    <input type="date" ng-model="addtrip.to">
+    <input type="date" ng-model="addtrip.enddate">
   </label>
 <label class="item item-input">
     <span class="input-label">Income</span>
-    <input type="text" ng-model="addtrip.income" placeholder="2000">
+    <input type="number" ng-model="addtrip.income">
   </label>
 
 <label class="item item-input">
     <span class="input-label">Owner%</span>
-    <input type="text" ng-model="addtrip.owner" placeholder="2000">
+    <input type="number" ng-model="addtrip.ownerpercentage">
   </label>
   <label class="item item-input">
     <span class="input-label">Worker%</span>
-    <input type="text" ng-model="addtrip.worker" placeholder="10">
+    <input type="number" ng-model="addtrip.workerpercentage">
   </label>
   <label class="item item-input">
     <span class="input-label">Petrol</span>
-    <input type="text" ng-model="addtrip.petrol" placeholder="2000">
+    <input type="number" ng-model="addtrip.petrol">
   </label>
   <label class="item item-input">
     <span class="input-label">Ice</span>
-    <input type="text" ng-model="addtrip.ice" placeholder="200">
+    <input type="number" ng-model="addtrip.ice">
   </label>
   <label class="item item-input">
     <span class="input-label">net</span>
-    <input type="text" ng-model="addtrip.net" placeholder="200">
+    <input type="number" ng-model="addtrip.net">
   </label>
    <label class="item item-input">
     <span class="input-label">Food</span>
-    <input type="text" ng-model="addtrip.food" placeholder="200">
+    <input type="number" ng-model="addtrip.food">
   </label>
   <label class="item item-input">
     <span class="input-label">Extra</span>
-    <input type="text" ng-model="addtrip.extra" placeholder="200">
+    <input type="number" ng-model="addtrip.extra">
   </label>
   <label class="item item-input">
     <span class="input-label">Bata/Day</span>
-    <input type="text" ng-model="addtrip.bata" placeholder="200">
+    <input type="number" ng-model="addtrip.bataperday">
   </label>
     <label class="item item-divider">
     <span class="input-label">Members</span>
   </label>   
   <ul class="list">
-<li class="item item-checkbox">
+  <li class="item item-checkbox" ng-repeat="(k, member) in user.members">
      <label class="checkbox">
-       <input type="checkbox">
+       <input type="checkbox" ng-model="addtrip.allmembers[member._id]" ng-init="addtrip.allmembers[member._id] = true">
      </label>
-     Captain
+     {{member.name}}
   </li>
-  <li class="item item-checkbox">
-     <label class="checkbox">
-       <input type="checkbox">
-     </label>
-     Vice-Captain
-  </li>
-  <li class="item item-checkbox">
-     <label class="checkbox">
-       <input type="checkbox">
-     </label>
-     Worker1
-  </li>
-  <li class="item item-checkbox">
-     <label class="checkbox">
-       <input type="checkbox">
-     </label>
-     Worker2
-  </li>
-  <li class="item item-checkbox">
-     <label class="checkbox">
-       <input type="checkbox">
-     </label>
-     Worker3
-  </li>
-  <li class="item item-checkbox">
-     <label class="checkbox">
-       <input type="checkbox">
-     </label>
-     Worker4
-  </li>
-  <li class="item item-checkbox">
-     <label class="checkbox">
-       <input type="checkbox">
-     </label>
-     Worker5
-  </li>
-  <li class="item item-checkbox">
-     <label class="checkbox">
-       <input type="checkbox">
-     </label>
-     Worker6
-  </li>
-  <li class="item item-checkbox">
-     <label class="checkbox">
-       <input type="checkbox">
-     </label>
-     Worker7
-  </li>
-  <li class="item item-checkbox">
-     <label class="checkbox">
-       <input type="checkbox">
-     </label>
-     Worker8
-  </li>
-  <li class="item item-checkbox">
-     <label class="checkbox">
-       <input type="checkbox">
-     </label>
-     Worker9
-  </li>
-  <li class="item item-checkbox">
-     <label class="checkbox">
-       <input type="checkbox">
-     </label>
-     Worker10
-  </li>
-  <li class="item item-checkbox">
-     <label class="checkbox">
-       <input type="checkbox">
-     </label>
-     Worker11
-  </li>
-  <li class="item item-checkbox">
-     <label class="checkbox">
-       <input type="checkbox">
-     </label>
-     Worker12
-  </li></ul>
-
+</ul>
  </div>
 <div class="padding">
         <button class="button button-block button-positive activated" ng-click='submit()'>Submit</button>

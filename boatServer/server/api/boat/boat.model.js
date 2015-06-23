@@ -9,7 +9,7 @@ var BoatSchema = new Schema({
   mobile: String,
   ownerpercentage: Number,
   workerpercentage: Number,
-  betaperday: Number,
+  bataperday: Number,
   active: Boolean,
   created: Date
 });

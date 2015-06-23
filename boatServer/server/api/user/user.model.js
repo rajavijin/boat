@@ -9,14 +9,12 @@ var UserSchema = new Schema({
   boatname: String,
   boatid: String,
   email: { type: String, lowercase: true },
-  role: {
-    type: String,
-    default: 'worker'
-  },
+  role: String,
   mobile: String,
   address: String,
   salarylevel: Number,
   remainingbalance: Number,
+  total:Number,
   pepper: String,
   hashedPassword: String,
   provider: String,

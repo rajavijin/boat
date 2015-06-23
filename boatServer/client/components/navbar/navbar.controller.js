@@ -11,7 +11,7 @@ angular.module('boatServerApp')
     $scope.isLoggedIn = Auth.isLoggedIn;
     $scope.isAdmin = Auth.isAdmin;
     $scope.getCurrentUser = Auth.getCurrentUser;
-
+    console.log("auth isadmin", Auth.isAdmin());
     $scope.logout = function() {
       Auth.logout();
       $location.path('/login');

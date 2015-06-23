@@ -59,10 +59,10 @@ angular.module('starter.services', [])
       });
       return defer.promise;     
     },
-    getTimetable: function(params) {
-      console.log("Timetable Params:", params);
+    getUsers: function(params) {
+      console.log("users param:", params);
       var defer = $q.defer();
-      $http.get(baseUrl+'/timetable/'+params.schoolid+'/'+params.class+'/'+params.subject)
+      $http.get(baseUrl+'/users/'+params.boatid)
       .success(function(data, status, headers, config){
         defer.resolve(data);
       }).error(function(data, status, headers, config){
@@ -70,10 +70,10 @@ angular.module('starter.services', [])
       }); 
       return defer.promise;
     },
-    getConversation: function(params) {
+    getTrips: function(params) {
       console.log("Get messages Params:", params);
       var defer = $q.defer();
-      $http.get(baseUrl+'/messages/'+params.schoolid+'/'+params.chatname)
+      $http.get(baseUrl+'/trip/'+params.boatid)
       .success(function(data, status, headers, config){
         defer.resolve(data);
       }).error(function(data, status, headers, config){
@@ -81,17 +81,28 @@ angular.module('starter.services', [])
       }); 
       return defer.promise;
     },
-    sendMessage: function(message) {
-      console.log("Message", message);
+    getTrip: function(params) {
+      console.log("Get messages Params:", params);
       var defer = $q.defer();
-      $http.post(baseUrl+'/messages', message)
+      $http.get(baseUrl+'/trip/'+params.boatid+'/'+params._id)
       .success(function(data, status, headers, config){
         defer.resolve(data);
       }).error(function(data, status, headers, config){
         defer.reject(data);
       }); 
       return defer.promise;
-    },            
+    },
+    addTrip: function(trip) {
+      console.log("Message", trip);
+      var defer = $q.defer();
+      $http.post(baseUrl+'/trip', trip)
+      .success(function(data, status, headers, config){
+        defer.resolve(data);
+      }).error(function(data, status, headers, config){
+        defer.reject(data);
+      }); 
+      return defer.promise;
+    },
     online: function() {
       return true;
       if(navigator.platform == "Linux x86_64") {

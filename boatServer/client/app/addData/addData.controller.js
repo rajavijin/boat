@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('boatServerApp')
-  .controller('AddDataCtrl', function ($scope) {
+  .controller('AddDataCtrl', function ($scope,$http,$location) {
     $scope.result = '';
     $scope.ipdata = {};
     $scope.boat = {};
@@ -30,38 +30,21 @@ angular.module('boatServerApp')
                             lastknownData[head[k]] = r;
                         })
                         lastknownData["import"] = true;
-                        lastknownData["boat"] = $scope.boat.boatname;
                         lastknownData["email"] = lastknownData["mobile"];
                         lastknown.push(lastknownData);
                     }
                 });
             })
             var boatData = $scope.boat;
-            var allGrades = boatData.grades.split(",");
-            var grades = [];
-            console.log("rank", boatData.ranking);
-            if(boatData.ranking == 'grade') {
-                angular.forEach(allGrades, function(g, gi) {
-                    var values = g.split(":");
-                    var range = values[1].split("-");
-                    grades[gi] = {};
-                    grades[gi]["grade"] = values[0];
-                    grades[gi]["lesser"] = parseInt(range[0]);
-                    grades[gi]["greater"] = parseInt(range[1]);
-                });
-            } else {
-                angular.forEach(allGrades, function(g, gi) {
-                    var range = g.split("-");
-                    grades[gi] = {};
-                    grades[gi]["grade"] = g;
-                    grades[gi]["lesser"] = parseInt(range[0]);
-                    grades[gi]["greater"] = parseInt(range[1]);
-                });
-            }
-            boatData.grades = grades;
             console.log("boatData", boatData);
-            $http.post('/api/boats', boatData).success(function(boat) {
+            $http.post('/api/boat', boatData).success(function(boat) {
                 console.log("boat", boat);
+		        var owner = {};
+		        owner.role = "owner";
+		        owner.email = boat.mobile;
+		        owner.name = boat.owner;
+		        owner.import = true;
+		        lastknown.push(owner);
                 createUser(lastknown, boat, 0);
             }).error(function(err) {
                 console.log('error', err);
@@ -71,8 +54,8 @@ angular.module('boatServerApp')
     }
 
     var createUser = function(userData, boatData, i) {
+        userData[i].boatname = boatData.boatname;
         userData[i].boatid = boatData._id;
-        userData[i].boat = boatData.boat;
         console.log("userDataSent", userData[i]);
         $http.post('/api/users', userData[i]).success(function(created) {
             i++;

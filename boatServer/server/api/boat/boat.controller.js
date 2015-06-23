@@ -2,6 +2,7 @@
 
 var _ = require('lodash');
 var Boat = require('./boat.model');
+var User = require('../user/user.model');
 
 // Get list of boats
 exports.index = function(req, res) {
@@ -22,10 +23,28 @@ exports.show = function(req, res) {
 
 // Creates a new boat in the DB.
 exports.create = function(req, res) {
-  Boat.create(req.body, function(err, boat) {
-    if(err) { return handleError(res, err); }
-    return res.json(201, boat);
-  });
+  Boat.findOne({
+    mobile:req.body.mobile,
+  }, function(err, boatData) {
+    console.log("boatData", boatData);
+    if(boatData) {
+      var updated = _.merge(boatData, req.body);
+      updated.save(function (err) {
+        if (err) { return handleError(res, err); }
+        return res.json(200, boatData);
+      });
+    } else {
+      Boat.create(req.body, function(err, boat) {
+        if(err) { return handleError(res, err); }
+        return res.json(boat);
+        /*var newHm = new User(hm);
+        newHm.save(function(err, boatdata) {
+          if(err) { return handleError(res, err); }
+          return res.json(201, boat);            
+        });*/
+      });   
+    }
+  });  
 };
 
 // Updates an existing boat in the DB.

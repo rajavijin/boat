@@ -20,6 +20,15 @@ exports.show = function(req, res) {
   });
 };
 
+// Get trips
+exports.trips = function(req, res) {
+  Trip.find({boatid: req.params.boatid}, function (err, trip) {
+    if(err) { return handleError(res, err); }
+    if(!trip) { return res.send(404); }
+    return res.json(trip);
+  });
+};
+
 // Creates a new trip in the DB.
 exports.create = function(req, res) {
   Trip.create(req.body, function(err, trip) {

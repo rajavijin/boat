@@ -4,7 +4,8 @@ angular.module('boatServerApp', [
   'ngCookies',
   'ngResource',
   'ngSanitize',
-  'ngRoute'
+  'ngRoute',
+  'ngCsvImport'
 ])
   .config(function ($routeProvider, $locationProvider, $httpProvider) {
     $routeProvider
