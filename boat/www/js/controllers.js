@@ -149,7 +149,7 @@ angular.module('starter.controllers', ['starter.services'])
 })
 .controller('TripDashboardCtrl', function($scope, $state, $cordovaSQLite, $stateParams, MyService) {
   $scope.getTripData = function() {
-    var query = 'SELECT * from trips where rowid = "'+$stateParams.id+'"';
+    var query = 'SELECT * from trips where id = "'+$stateParams.id+'"';
     $cordovaSQLite.execute(db, query).then(function(res) {
       totalrecords = res.rows.length;
       if(totalrecords > 0) {
@@ -301,7 +301,7 @@ angular.module('starter.controllers', ['starter.services'])
 .controller('HomeCtrl',function($scope, $state, MyService){
   $scope.user = {
     email: '9988776655',
-    password:'904zehfr',
+    password:'2pkl0udi',
   }
   $scope.login = function() { 
     if (($scope.user.email == null) || ($scope.user.password == null)) {

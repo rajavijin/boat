@@ -85,25 +85,30 @@ User.findOne({
   }, '-pepper', function(err, user) { // don't ever give out the password or salt
     if (err) return next(err);
     if(user.authenticate(req.body.password)) {
+      console.log("authenticated", user);
       if (!user) return res.json(401);
       User.find({boatid:user.boatid,role:{$ne:'owner'}}, 'name role salarylevel remainingbalance', function(err, members) {
-        var userdetails = { 
-          _id: '55880b2426cfdfed3c704e48',
-          role: user.role,
-          email: user.email,
-          name: user.name,
-          boatname: user.boatname,
-          boatid: user.boatid
+        if(user.active) {
+          var userdetails = { 
+            _id: '55880b2426cfdfed3c704e48',
+            role: user.role,
+            email: user.email,
+            name: user.name,
+            boatname: user.boatname,
+            boatid: user.boatid
+          }
+          userdetails.members = members;
+          Boat.findOne({_id:user.boatid}, function(err, boatDetails) {
+            console.log("boat details", boatDetails);
+            userdetails.ownerpercentage = boatDetails.ownerpercentage;
+            userdetails.workerpercentage = boatDetails.workerpercentage;
+            userdetails.bataperday = boatDetails.bataperday;
+            console.log("userdetails", userdetails);
+            res.json(userdetails);
+          })
+        } else {
+          res.json({status:"blocked"});
         }
-        userdetails.members = members;
-        Boat.findOne({_id:user.boatid}, function(err, boatDetails) {
-          console.log("boat details", boatDetails);
-          userdetails.ownerpercentage = boatDetails.ownerpercentage;
-          userdetails.workerpercentage = boatDetails.workerpercentage;
-          userdetails.bataperday = boatDetails.bataperday;
-          console.log("userdetails", userdetails);
-          res.json(userdetails);
-        })
       })
     }
   }); 
