@@ -49,9 +49,27 @@ angular.module('starter.controllers', ['starter.services'])
     }, 1000);
   };*/
 })
-.controller('DashboardCtrl', function($scope, $state, MyService) {
+.controller('DashboardCtrl', function($scope, $state, $cordovaSQLite, MyService) {
   $scope.getTrips = function() {
-    var params = {};
+    var query = 'SELECT * from trips where boatid = "'+user.boatid+'"';
+    $cordovaSQLite.execute(db, query).then(function(res) {
+      totalrecords = res.rows.length;
+      if(totalrecords > 0) {
+        $scope.dashboardStatus = "not empty";
+        var trips = [];
+        for (var i = 0; i < res.rows.length; i++) {
+          var row = res.rows[i];
+          console.log("row", row);
+          trips.push(row);
+        };
+        console.log("All Trips", trips);
+        processVal(trips);
+      } else {$scope.dashboardStatus = "empty";}
+    }, function(err) {
+
+    }).finally(function() {$scope.$broadcast('scroll.refreshComplete');});
+
+/*    var params = {};
     params.boatid = user.boatid;
     if(MyService.online()) {
       MyService.getTrips(params).then(function(trips) {
@@ -65,7 +83,7 @@ angular.module('starter.controllers', ['starter.services'])
       })
     } else {
 
-    }
+    }*/
   }
   var processVal = function(trips) {
     var incomeLabels = [];
@@ -92,10 +110,27 @@ angular.module('starter.controllers', ['starter.services'])
     }
   }
 })
-.controller('AllTripsCtrl', function($scope, $state, MyService) {
+.controller('AllTripsCtrl', function($scope, $state, $cordovaSQLite, MyService) {
   $scope.filterToggle = function() {$scope.filterStatus = !$scope.filterStatus;}
   $scope.getTrips = function() {
-    var params = {};
+    var query = 'SELECT * from trips where boatid = "'+user.boatid+'"';
+    $cordovaSQLite.execute(db, query).then(function(res) {
+      totalrecords = res.rows.length;
+      if(totalrecords > 0) {
+        $scope.dashboardStatus = "not empty";
+        var trips = [];
+        for (var i = 0; i < res.rows.length; i++) {
+          var row = res.rows[i];
+          console.log("row", row);
+          trips.push(row);
+        };
+        console.log("All Trips", trips);
+        $scope.trips = trips;
+      } else {$scope.dashboardStatus = "empty";}
+    }, function(err) {
+
+    }).finally(function() {$scope.$broadcast('scroll.refreshComplete');});
+    /*var params = {};
     params.boatid = user.boatid;
     if(MyService.online()) {
       MyService.getTrips(params).then(function(trips) {
@@ -109,15 +144,30 @@ angular.module('starter.controllers', ['starter.services'])
       })
     } else {
 
-    }
+    }*/
   }
 })
-.controller('TripDashboardCtrl', function($scope, $state, $stateParams, MyService) {
+.controller('TripDashboardCtrl', function($scope, $state, $cordovaSQLite, $stateParams, MyService) {
   $scope.getTripData = function() {
-    var params = {};
-    params.boatid = user.boatid;
-    params._id = $stateParams.id;
-    if(MyService.online()) {
+    var query = 'SELECT * from trips where rowid = "'+$stateParams.id+'"';
+    $cordovaSQLite.execute(db, query).then(function(res) {
+      totalrecords = res.rows.length;
+      if(totalrecords > 0) {
+        $scope.dashboardStatus = "not empty";
+        var trip = res.rows.item(0);
+        var startdate = new Date(trip.startdate);
+        var enddate = new Date(trip.enddate);
+        trip.startdate = startdate.getDate() +' '+months[startdate.getMonth()]+' '+startdate.getFullYear();
+        trip.enddate = enddate.getDate() +' '+months[enddate.getMonth()]+' '+enddate.getFullYear();
+        trip.members = JSON.parse(trip.members);
+        trip.extra = JSON.parse(trip.extra);
+        console.log("trip dash", trip);
+        $scope.trip = trip;
+      } else {$scope.dashboardStatus = "empty";}
+    }, function(err) {
+
+    }).finally(function() {$scope.$broadcast('scroll.refreshComplete'); $ionicLoading.hide();});
+    /*if(MyService.online()) {
       MyService.getTrip(params).then(function(trip) {
         console.log("Trips", trip);       
         var startdate = new Date(trip.startdate);
@@ -128,10 +178,10 @@ angular.module('starter.controllers', ['starter.services'])
       }).finally(function() {$scope.$broadcast('scroll.refreshComplete');});
     } else {
 
-    }
+    }*/
   }
 })
-.controller('AddtripCtrl', function($scope, $state, MyService) {
+.controller('AddtripCtrl', function($scope, $state, $cordovaSQLite, MyService) {
   console.log("current user", user);
   var addtrip = {members:{}};
   addtrip.boatid = user.boatid;
@@ -140,13 +190,22 @@ angular.module('starter.controllers', ['starter.services'])
   addtrip.workerpercentage = user.workerpercentage;
   addtrip.bataperday = user.bataperday;
   //default values
-  addtrip.petrol = 100;
+  addtrip.income = 90000;
+  addtrip.diesel = 100;
   addtrip.ice = 100;
   addtrip.food = 100;
-  addtrip.extra = 100;
+  addtrip.extra = [{name:'Oil',price:200}];
   addtrip.net = 100;
   $scope.addtrip = addtrip;
   $scope.user = user;
+  $scope.createExtra = function() {
+    console.log("creating new extra");
+    $scope.addtrip.extra.push({name:'Belt',price:200});
+  }
+  $scope.removeExtra = function(index) {
+    $scope.addtrip.extra.splice(index, 1);
+  }
+
   $scope.submit = function() {
     var oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
     var totalDays = Math.round(Math.abs(($scope.addtrip.startdate.getTime() - $scope.addtrip.enddate.getTime())/(oneDay)));
@@ -164,8 +223,14 @@ angular.module('starter.controllers', ['starter.services'])
     console.log("total days", totalDays);
     console.log("total Members", totalmembers);
     console.log("total partitions", totalpartitions);
+    var extra = 0;
+    for (var i = 0; i < tripdetails.extra.length; i++) {
+      if(tripdetails.extra[i].name) {
+        extra += tripdetails.extra[i].price;
+      }
+    }
     tripdetails.bata = totalmembers * tripdetails.bataperday * totalDays;
-    tripdetails.totalspending = tripdetails.petrol + tripdetails.ice + tripdetails.net + tripdetails.food + tripdetails.extra + tripdetails.bata;
+    tripdetails.totalspending = tripdetails.diesel + tripdetails.ice + tripdetails.net + tripdetails.food + extra + tripdetails.bata;
     tripdetails.balance = tripdetails.income - tripdetails.totalspending;
     tripdetails.ownerincome = tripdetails.balance * (tripdetails.ownerpercentage/100);
     tripdetails.workerincome = tripdetails.balance * (tripdetails.workerpercentage/100);
@@ -184,15 +249,38 @@ angular.module('starter.controllers', ['starter.services'])
     };
     console.log("total days", totalDays);
     console.log('TRIP DETAILS', tripdetails);
-    if(MyService.online()) {
+    //tripdetails.members = JSON.stringify(tripdetails.members).replace(/,/g,'}_');
+    //tripdetails.extra = JSON.stringify(tripdetails.extra).replace(/,/g,'}_');
+/*    var keys = '';
+    var vals = '';
+    var values = [];
+    for(var tripkey in tripdetails) {
+        keys += tripkey + ', ';
+        vals += '?,';
+        values.push(tripdetails[tripkey]);
+    }*/
+    //var query = "INSERT into trips ("+keys.substring(0, keys.length - 1)+") VALUES ("+vals.substring(0, vals.length - 1)+")";
+    var query = "INSERT into trips (name,boatname,boatid,startdate,enddate,income,diesel,ice,net,food,bata,balance,ownerincome,workerincome,totalspending,extra,members) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    console.log("query", query);
+    $cordovaSQLite.execute(db, query, [tripdetails.name,tripdetails.boatname,tripdetails.boatid,tripdetails.startdate,tripdetails.enddate,tripdetails.income,tripdetails.diesel,tripdetails.ice,tripdetails.net,tripdetails.food,tripdetails.bata,tripdetails.balance,tripdetails.ownerincome,tripdetails.workerincome,tripdetails.totalspending, JSON.stringify(tripdetails.extra), JSON.stringify(tripdetails.members)]).then(function(res) {
+      console.log("insertId: " + res.insertId);
+      $state.go('app.tripdashboard', {id:res.insertId}, {reload:true});
+    })
+    /*var selectq = 'SELECT key from marks where key = "'+dbkey+'"';
+    $cordovaSQLite.execute(db, selectq).then(function(sres) {
+      console.log("record count", sres.rows.length);
+      if(sres.rows.length == 0) {
+        var values = [dbkey, JSON.stringify(studentMarks)];
+      }
+    })*/
+/*    if(MyService.online()) {
       MyService.addTrip(tripdetails).then(function(tripdata) {
         if(tripdata) {
-          $state.go('app.tripdashboard', {id:tripdata._id}, {reload:true});
         }
       });
     } else {
 
-    }
+    }*/
   }
 })
 .controller('AddusersCtrl', function($scope,  $stateParams) {
@@ -224,17 +312,25 @@ angular.module('starter.controllers', ['starter.services'])
         if(user) {
           $state.go("app.dashboard", {},  {'reload': true});
         }
+      }, function(err) {
+        console.log("user login error", err);
       })
+      /*var loggedinuser = localStorage.getItem("loggedinuser") || {};
+      if(loggedinuser) {
+        var luser = JSON.parse(loggedinuser);
+        if((luser.email == $scope.user.email) && (luser.password == $scope.user.password)) {
+          localStorage.setItem('uid', user._id);
+          $state.go("app.dashboard", {},  {'reload': true});
+        }
+      } else {
+      }*/
     }
     console.log("user details", $scope.user);
   }
 })
 .controller('LogoutCtrl', function($scope, $http, $state) {
-    delete $http.defaults.headers.common.Authorization;
+    //delete $http.defaults.headers.common.Authorization;
     console.log("Logging out:");
     localStorage.removeItem('uid');
-    localStorage.removeItem("DashParam");
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
     $state.go("home", {}, {reload: true});
 });

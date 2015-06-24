@@ -10,15 +10,15 @@
       <a class="item item-icon-left first" href="#">
       <i class="icon ion-ios-calendar positive"></i>Enddate<span class="badge badge-positive">{{trip.enddate}}</span></a>
       <a class="item item-icon-left first" href="#">
-      <i class="icon ion-plus-circled positive"></i>Petrol<span class="badge badge-positive">{{trip.petrol}}</span></a> 
+      <i class="icon ion-plus-circled positive"></i>Petrol<span class="badge badge-positive">{{trip.diesel}}</span></a> 
       <a class="item item-icon-left first" href="#">
       <i class="icon ion-plus-circled positive"></i>Ice<span class="badge badge-positive">{{trip.ice}}</span></a>
       <a class="item item-icon-left first" href="#">
       <i class="icon ion-plus-circled positive"></i>Net<span class="badge badge-positive">{{trip.net}}</span></a> 
       <a class="item item-icon-left first" href="#">
       <i class="icon ion-plus-circled positive"></i>Food<span class="badge badge-positive">{{trip.food}}</span></a> 
-      <a class="item item-icon-left first" href="#">
-      <i class="icon ion-plus-circled positive"></i>Extra<span class="badge badge-positive">{{trip.extra}}</span></a>
+      <a class="item item-icon-left first" href="#" ng-repeat="extv in trip.extra">
+      <i class="icon ion-plus-circled positive"></i>{{extv.name}}<span class="badge badge-positive">{{extv.price}}</span></a>
       <a class="item item-icon-left first" href="#">
       <i class="icon ion-plus-circled positive"></i>Bata<span class="badge badge-positive">{{trip.bata}}</span></a>      
       <a class="item item-icon-left first" href="#">

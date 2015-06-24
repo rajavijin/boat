@@ -10,10 +10,18 @@ var months = [
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'starter.controllers'])
+angular.module('starter', ['ionic', 'ngCordova', 'starter.controllers'])
 
-.run(function($ionicPlatform) {
+.run(function($ionicPlatform, $cordovaSQLite) {
   $ionicPlatform.ready(function() {
+    if(window.cordova && window.sqlitePlugin) {
+      db = $cordovaSQLite.openDB({ name: "ttboat.db" });
+    } else {
+      db = window.openDatabase("ttboat.db", "1.0", "my test data", 200000);
+    }
+    //$cordovaSQLite.execute(db, "DROP TABLE trips");
+    $cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS trips (id integer primary key, name text, boatname text, boatid text, startdate date, enddate date, income integer, diesel integer, ice integer, net integer, food integer, extra blob, bata integer, members blob, balance integer, ownerincome integer, workerincome integer, totalspending integer)");
+    $cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS users (id integer primary key, boatname text, boatid text, email text, role text, salarylevel integer)");
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
     if (window.cordova && window.cordova.plugins.Keyboard) {

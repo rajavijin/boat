@@ -23,8 +23,8 @@
     <input type="number" ng-model="addtrip.workerpercentage">
   </label>
   <label class="item item-input">
-    <span class="input-label">Petrol</span>
-    <input type="number" ng-model="addtrip.petrol">
+    <span class="input-label">Diesel</span>
+    <input type="number" ng-model="addtrip.diesel">
   </label>
   <label class="item item-input">
     <span class="input-label">Ice</span>
@@ -39,14 +39,20 @@
     <input type="number" ng-model="addtrip.food">
   </label>
   <label class="item item-input">
-    <span class="input-label">Extra</span>
-    <input type="number" ng-model="addtrip.extra">
-  </label>
-  <label class="item item-input">
     <span class="input-label">Bata/Day</span>
     <input type="number" ng-model="addtrip.bataperday">
   </label>
-    <label class="item item-divider">
+  <label class="item item-divider item-icon-right">
+    <span class="input-label">Extra</span>
+    <div class="buttons buttons-right header-item"><span class="right-buttons">
+  <button class="icon button-clear ion-ios-plus-outline" ng-click="createExtra()"></button>
+    </span></div>
+  </label>
+  <label on-swipe-left="removeExtra(k)" class="item item-input" ng-repeat="(k,v) in addtrip.extra">
+    <input type="text" ng-model="addtrip.extra[k].name" placeholder="Add extra">
+    <input type="number" ng-model="addtrip.extra[k].price" placeholder="rs">
+  </label>
+  <label class="item item-divider">
     <span class="input-label">Members</span>
   </label>   
   <ul class="list">

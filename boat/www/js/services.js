@@ -21,6 +21,12 @@ angular.module('starter.services', [])
               title: 'Login failed!',
               template: 'Password not matching'
           });
+        } else if (data.status == "blocked") {
+          $ionicLoading.hide();
+          $ionicPopup.alert({
+              title: 'Login failed!',
+              template: 'Your account is blocked, Please contact admin'
+          });
         } else {
           $http.defaults.headers.common.Authorization = "Bearer "+data.token;
           user = data;
