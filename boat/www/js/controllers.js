@@ -301,7 +301,7 @@ angular.module('starter.controllers', ['starter.services'])
 .controller('HomeCtrl',function($scope, $state, MyService){
   $scope.user = {
     email: '9988776655',
-    password:'2pkl0udi',
+    password:'904zehfr',
   }
   $scope.login = function() { 
     if (($scope.user.email == null) || ($scope.user.password == null)) {
