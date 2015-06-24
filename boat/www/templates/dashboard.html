@@ -2,8 +2,9 @@
    <ion-nav-title>{{title}} Dashboard</ion-nav-title>
    <ion-content class="has-header">
       <ion-refresher pulling-text="Pull to refresh" on-refresh="getTrips()"></ion-refresher>
-<!--       <chart id="ssubjects" config="ssubjectsConfig" ng-if="dashboardStatus != 'empty'"></chart>
-      <chart id="sattendance" config="sattendanceConfig" ng-if="dashboardStatus != 'empty'" class="noclick"></chart> -->
+      <chart id="income" config="incomeConfig" ng-if="dashboardStatus != 'empty'"></chart>
+      <div class="padding"></div>
+      <chart id="spending" config="spendingConfig" ng-if="dashboardStatus != 'empty'"></chart>
 <!--       <div class="list">
       <a class="item item-icon-left first" href="#">
       <i class="icon ion-plus-circled positive"></i>Income<span class="badge badge-positive">{{trip.income}}</span></a> 

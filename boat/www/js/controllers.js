@@ -55,10 +55,40 @@ angular.module('starter.controllers', ['starter.services'])
     params.boatid = user.boatid;
     if(MyService.online()) {
       MyService.getTrips(params).then(function(trips) {
-        console.log("Trips", trips);       
+        console.log("Trips", trips);
+        if(trips) {
+          $scope.dashboardStatus = true;
+          processVal(trips);
+        } else {
+          $scope.dashboardStatus = false;
+        }
       })
     } else {
 
+    }
+  }
+  var processVal = function(trips) {
+    var incomeLabels = [];
+    var income = [];
+    var spending = [];
+    for (var i = 0; i < trips.length; i++) {
+      incomeLabels.push(trips[i].name);
+      income.push(trips[i].income);
+      spending.push(trips[i].totalspending);
+    }
+    $scope.incomeConfig = {
+      chart: {renderTo: 'income',type: 'column', options3d: {enabled: true,alpha: 10,beta: 20,depth: 50}},
+      title: {text:"Income"},plotOptions: {column: {depth: 25,showInLegend: false, dataLabels: {enabled: true,format: '{point.y}'}, events: {legendItemClick: function () {return false;}}}},
+      xAxis: {categories: incomeLabels},
+      yAxis: {title: {text: null}},
+      series: [{name: 'Mark',data: income}]
+    }
+    $scope.spendingConfig = {
+      chart: {renderTo: 'spending',type: 'column', options3d: {enabled: true,alpha: 10,beta: 20,depth: 50}},
+      title: {text:"Spending"},plotOptions: {column: {depth: 25,showInLegend: false, dataLabels: {enabled: true,format: '{point.y}'}, events: {legendItemClick: function () {return false;}}}},
+      xAxis: {categories: incomeLabels},
+      yAxis: {title: {text: null}},
+      series: [{name: 'Mark',data: spending}]
     }
   }
 })
@@ -90,8 +120,12 @@ angular.module('starter.controllers', ['starter.services'])
     if(MyService.online()) {
       MyService.getTrip(params).then(function(trip) {
         console.log("Trips", trip);       
+        var startdate = new Date(trip.startdate);
+        var enddate = new Date(trip.enddate);
+        trip.startdate = startdate.getDate() +' '+months[startdate.getMonth()]+' '+startdate.getFullYear();
+        trip.enddate = enddate.getDate() +' '+months[enddate.getMonth()]+' '+enddate.getFullYear();
         $scope.trip = trip;
-      })
+      }).finally(function() {$scope.$broadcast('scroll.refreshComplete');});
     } else {
 
     }
@@ -120,12 +154,6 @@ angular.module('starter.controllers', ['starter.services'])
     tripdetails.members = [];
     var totalmembers = 0;
     var totalpartitions = 0;
-    var months = [
-        "Jan", "Feb", "Mar",
-        "Apr", "May", "Jun", "Jul",
-        "Aug", "Sep", "Oct",
-        "Nov", "Dec"
-    ];
     tripdetails.name = tripdetails.startdate.getDate() +' '+months[tripdetails.startdate.getMonth()]+' '+tripdetails.startdate.getFullYear();
     for (var i = 0; i < user.members.length; i++) {
       if(tripdetails.allmembers[user.members[i]._id]) {
@@ -136,7 +164,8 @@ angular.module('starter.controllers', ['starter.services'])
     console.log("total days", totalDays);
     console.log("total Members", totalmembers);
     console.log("total partitions", totalpartitions);
-    tripdetails.totalspending = tripdetails.petrol + tripdetails.ice + tripdetails.net + tripdetails.food + tripdetails.extra + (totalmembers * tripdetails.bataperday * totalDays);
+    tripdetails.bata = totalmembers * tripdetails.bataperday * totalDays;
+    tripdetails.totalspending = tripdetails.petrol + tripdetails.ice + tripdetails.net + tripdetails.food + tripdetails.extra + tripdetails.bata;
     tripdetails.balance = tripdetails.income - tripdetails.totalspending;
     tripdetails.ownerincome = tripdetails.balance * (tripdetails.ownerpercentage/100);
     tripdetails.workerincome = tripdetails.balance * (tripdetails.workerpercentage/100);
@@ -145,11 +174,11 @@ angular.module('starter.controllers', ['starter.services'])
         var memberinfo = user.members[i];
         if(tripdetails.workerincome < 0) {
           var salarylevelpercentage = 1 * (100/totalpartitions);
-          tripdetails.remainingbalance = user.members[i].remainingbalance + (tripdetails.workerincome * (salarylevelpercentage/100));
+          tripdetails.remainingbalance = (user.members[i].remainingbalance + (tripdetails.workerincome * (salarylevelpercentage/100))).toFixed(2);
         } else {
           var salarylevelpercentage = user.members[i].salarylevel * (100/totalpartitions);
         } 
-        memberinfo.total = tripdetails.workerincome * (salarylevelpercentage/100);
+        memberinfo.total = (tripdetails.workerincome * (salarylevelpercentage/100)).toFixed(2);
         tripdetails.members.push(memberinfo);
       }
     };
@@ -174,7 +203,10 @@ angular.module('starter.controllers', ['starter.services'])
 })
 .controller('AllusersCtrl', function($scope,  $stateParams) {
 })
-.controller('ProfileCtrl', function($scope,  $stateParams) {
+.controller('ProfileCtrl', function($scope, MyService) {
+  $scope.getProfile = function() {
+    $scope.user = user;
+  }
 })
 .controller('LogoutCtrl', function($scope,  $stateParams) {
 })

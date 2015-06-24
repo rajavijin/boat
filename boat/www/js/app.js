@@ -1,5 +1,11 @@
 // Ionic Starter App
 var user = {};
+var months = [
+        "Jan", "Feb", "Mar",
+        "Apr", "May", "Jun", "Jul",
+        "Aug", "Sep", "Oct",
+        "Nov", "Dec"
+    ];
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
@@ -74,7 +80,7 @@ angular.module('starter', ['ionic', 'starter.controllers'])
             var process = function () {
                 var defaultOptions = {
                     chart: {renderTo: element[0], animation:true},
-                    colors: ['#23b7e5', '#ff6c60', '#90ed7d', '#f7a35c', '#8085e9', 
+                    colors: ['#387ef5', '#ff6c60', '#90ed7d', '#f7a35c', '#8085e9', 
    '#f15c80', '#e4d354', '#2b908f', '#f45b5b', '#91e8e1']
                 };
                 var config = angular.extend(defaultOptions, scope.config);
@@ -105,11 +111,6 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     abstract: true,
     templateUrl: "templates/menu.html",
     controller: 'AppCtrl'
-  })
-  .state('home', {
-    url: '/home',
-    templateUrl: 'templates/home.html',
-    controller: 'HomeCtrl'
   })
   .state('app.addtrip', {
     url: "/addtrip",
@@ -173,6 +174,11 @@ angular.module('starter', ['ionic', 'starter.controllers'])
         controller: 'TripDashboardCtrl'
       }
     }
+  })
+  .state('home', {
+    url: '/home',
+    templateUrl: 'templates/home.html',
+    controller: 'HomeCtrl'
   })
   .state('logout', {
       url: '/logout',

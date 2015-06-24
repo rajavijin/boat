@@ -1,5 +1,9 @@
-<ion-view title="Profile" ng-controller="HomeCtrl">
+<ion-view title="Profile" ng-init="getProfile()">
   <ion-content>
-    <h1>Boat Data</h1>
+    <div class="list">
+    	<a class="item item-icon-left"><i class="icon ion-person positive"></i> {{user.name}}</a>
+    	<a class="item item-icon-left"><i class="icon ion-android-boat positive"></i> {{user.boatname}}</a>
+    	<a class="item item-icon-left"><i class="icon ion-ios-telephone positive"></i> {{user.email}}</a>
+    </div>
   </ion-content>
 </ion-view>

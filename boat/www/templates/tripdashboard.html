@@ -1,14 +1,14 @@
 <ion-view cache-view="false" ng-init="getTripData()">
    <ion-nav-title>{{title}} Dashboard</ion-nav-title>
    <ion-content class="has-header">
-      <ion-refresher pulling-text="Pull to refresh" on-refresh="getMarksData()"></ion-refresher>
+      <ion-refresher pulling-text="Pull to refresh" on-refresh="getTripData()"></ion-refresher>
 <!--       <chart id="ssubjects" config="ssubjectsConfig" ng-if="dashboardStatus != 'empty'"></chart>
       <chart id="sattendance" config="sattendanceConfig" ng-if="dashboardStatus != 'empty'" class="noclick"></chart> -->
       <div class="list">
       <a class="item item-icon-left first" href="#">
-      <i class="icon ion-plus-circled positive"></i>Startdate<span class="badge badge-positive">{{trip.startdate}}</span></a>
+      <i class="icon ion-ios-calendar positive"></i>Startdate<span class="badge badge-positive">{{trip.startdate}}</span></a>
       <a class="item item-icon-left first" href="#">
-      <i class="icon ion-plus-circled positive"></i>Enddate<span class="badge badge-positive">{{trip.enddate}}</span></a>
+      <i class="icon ion-ios-calendar positive"></i>Enddate<span class="badge badge-positive">{{trip.enddate}}</span></a>
       <a class="item item-icon-left first" href="#">
       <i class="icon ion-plus-circled positive"></i>Petrol<span class="badge badge-positive">{{trip.petrol}}</span></a> 
       <a class="item item-icon-left first" href="#">
@@ -20,13 +20,19 @@
       <a class="item item-icon-left first" href="#">
       <i class="icon ion-plus-circled positive"></i>Extra<span class="badge badge-positive">{{trip.extra}}</span></a>
       <a class="item item-icon-left first" href="#">
+      <i class="icon ion-plus-circled positive"></i>Bata<span class="badge badge-positive">{{trip.bata}}</span></a>      
+      <a class="item item-icon-left first" href="#">
+      <i class="icon ion-plus-circled positive"></i>Income<span class="badge badge-positive">{{trip.income}}</span></a> 
+      <a class="item item-icon-left first" href="#">
+      <i class="icon ion-plus-circled positive"></i>Total Spending<span class="badge badge-positive">{{trip.totalspending}}</span></a> 
+      <a class="item item-icon-left first" href="#">
       <i class="icon ion-plus-circled positive"></i>Balance<span class="badge badge-positive">{{trip.balance}}</span></a> 
       <a class="item item-icon-left first" href="#">
       <i class="icon ion-plus-circled positive"></i>Ownerincome<span class="badge badge-positive">{{trip.ownerincome}}</span></a>
       <a class="item item-icon-left first" href="#">
       <i class="icon ion-plus-circled positive"></i>Workerincome<span class="badge badge-positive">{{trip.workerincome}}</span></a>
-      <a class="item item-icon-left first" href="#">
-      <i class="icon ion-plus-circled positive"></i>Total Spending<span class="badge badge-positive">{{trip.totalspending}}</span></a> 
+      <a class="item item-icon-left first" href="#" ng-repeat="member in trip.members">
+      <i class="icon ion-plus-circled positive"></i>{{member.name}}<span class="badge badge-positive">{{member.total}}</span></a>
       </div>
    </ion-content>
 </ion-view>

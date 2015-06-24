@@ -15,6 +15,7 @@ var TripSchema = new Schema({
   net: Number,
   food: Number,
   extra: Number,
+  bata: Number,
   members: Array,
   balance: Number,
   ownerincome: Number,
