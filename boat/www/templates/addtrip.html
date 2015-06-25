@@ -1,4 +1,4 @@
-<ion-view title="Addtrip" ng-controller="AddtripCtrl">
+<ion-view cache-view="false" title="{{title}}">
 <ion-content>
 <div class="list">
   <label class="item item-input">
@@ -16,11 +16,11 @@
 
 <label class="item item-input">
     <span class="input-label">Owner%</span>
-    <input type="number" ng-model="addtrip.ownerpercentage">
+    <input type="number" ng-model="addtrip.ownerp">
   </label>
   <label class="item item-input">
     <span class="input-label">Worker%</span>
-    <input type="number" ng-model="addtrip.workerpercentage">
+    <input type="number" ng-model="addtrip.workerp">
   </label>
   <label class="item item-input">
     <span class="input-label">Diesel</span>
@@ -56,9 +56,9 @@
     <span class="input-label">Members</span>
   </label>   
   <ul class="list">
-  <li class="item item-checkbox" ng-repeat="(k, member) in user.members">
+  <li class="item item-checkbox" ng-repeat="(k, member) in members">
      <label class="checkbox">
-       <input type="checkbox" ng-model="addtrip.allmembers[member._id]" ng-init="addtrip.allmembers[member._id] = true">
+       <input type="checkbox" ng-model="addtrip.allmembers[member._id]">
      </label>
      {{member.name}}
   </li>

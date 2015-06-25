@@ -1,5 +1,8 @@
 <ion-view cache-view="false" ng-init="getTripData()">
-   <ion-nav-title>{{title}} Dashboard</ion-nav-title>
+   <ion-nav-title>{{title}}</ion-nav-title>
+      <ion-nav-buttons side="right">
+      <button class="button button-icon button-clear ion-edit" ng-click="editTrip()"></button>
+    </ion-nav-buttons>
    <ion-content class="has-header">
       <ion-refresher pulling-text="Pull to refresh" on-refresh="getTripData()"></ion-refresher>
 <!--       <chart id="ssubjects" config="ssubjectsConfig" ng-if="dashboardStatus != 'empty'"></chart>

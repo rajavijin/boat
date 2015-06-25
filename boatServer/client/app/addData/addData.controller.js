@@ -24,7 +24,7 @@ angular.module('boatServerApp')
                 var lastknownData = {};
                 angular.forEach(data, function(d, i) {
                     var head = i.toLowerCase().split(";");
-                    var row = d.split(";");
+                    var row = d.toLowerCase().split(";");
                     if(row.length > 1) {
                         angular.forEach(row, function(r, k) {
                             lastknownData[head[k]] = r;
@@ -41,7 +41,8 @@ angular.module('boatServerApp')
                 console.log("boat", boat);
 		        var owner = {};
 		        owner.role = "owner";
-		        owner.email = boat.mobile;
+                owner.email = boat.mobile;
+		        owner.mobile = boat.mobile;
 		        owner.name = boat.owner;
 		        owner.import = true;
 		        lastknown.push(owner);

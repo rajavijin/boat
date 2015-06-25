@@ -87,7 +87,7 @@ User.findOne({
     if(user.authenticate(req.body.password)) {
       console.log("authenticated", user);
       if (!user) return res.json(401);
-      User.find({boatid:user.boatid,role:{$ne:'owner'}}, 'name role salarylevel remainingbalance', function(err, members) {
+      User.find({boatid:user.boatid,role:{$ne:'owner'}}, 'name email role salarylevel mobile remainingbalance', function(err, members) {
         if(user.active) {
           var userdetails = { 
             _id: '55880b2426cfdfed3c704e48',

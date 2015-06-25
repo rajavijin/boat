@@ -15,13 +15,13 @@ angular.module('starter', ['ionic', 'ngCordova', 'starter.controllers'])
 .run(function($ionicPlatform, $cordovaSQLite) {
   $ionicPlatform.ready(function() {
     if(window.cordova && window.sqlitePlugin) {
-      db = $cordovaSQLite.openDB({ name: "ttboat.db" });
+      db = $cordovaSQLite.openDB({ name: "dboat.db" });
     } else {
-      db = window.openDatabase("ttboat.db", "1.0", "my test data", 200000);
+      db = window.openDatabase("dboat.db", "1.0", "my test data", 200000);
     }
     //$cordovaSQLite.execute(db, "DROP TABLE trips");
-    $cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS trips (id integer primary key, name text, boatname text, boatid text, startdate date, enddate date, income integer, diesel integer, ice integer, net integer, food integer, extra blob, bata integer, members blob, balance integer, ownerincome integer, workerincome integer, totalspending integer)");
-    $cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS users (id integer primary key, boatname text, boatid text, email text, role text, salarylevel integer)");
+    $cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS trips (name text, boatname text, boatid text, startdate date, enddate date, income integer, diesel integer, ice integer, net integer, food integer, extra blob, bata integer, members blob, balance integer, ownerincome integer, workerincome integer, totalspending integer, ownerp integer, workerp integer, bataperday integer)");
+    $cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS users (name text, email text, role text, salarylevel integer)");
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
     if (window.cordova && window.cordova.plugins.Keyboard) {
@@ -120,33 +120,6 @@ angular.module('starter', ['ionic', 'ngCordova', 'starter.controllers'])
     templateUrl: "templates/menu.html",
     controller: 'AppCtrl'
   })
-  .state('app.addtrip', {
-    url: "/addtrip",
-    views: {
-      'menuContent': {
-        templateUrl: "templates/addtrip.html",
-        controller: 'AddtripCtrl'
-      }
-    }
-  })
-  .state('app.adduser', {
-    url: "/adduser",
-    views: {
-      'menuContent': {
-        templateUrl: "templates/adduser.html",
-        controller: 'AddusersCtrl'
-      }
-    }
-  })
-  .state('app.allusers', {
-    url: "/allusers",
-    views: {
-      'menuContent': {
-        templateUrl: "templates/allusers.html",
-        controller: 'AllusersCtrl'
-      }
-    }
-  })
   .state('app.trips', {
     url: "/trips",
     views: {
@@ -156,6 +129,69 @@ angular.module('starter', ['ionic', 'ngCordova', 'starter.controllers'])
       }
     }
   })
+  .state('app.addtrip', {
+    url: "/addtrip",
+    views: {
+      'menuContent': {
+        templateUrl: "templates/addtrip.html",
+        controller: 'AddtripCtrl'
+      }
+    }
+  })
+  .state('app.edittrip', {
+    url: "/edittrip/:id",
+    views: {
+      'menuContent': {
+        templateUrl: "templates/addtrip.html",
+        controller: 'EditTripCtrl'
+      }
+    }
+  })
+  .state('app.tripdashboard', {
+    url: "/tripdashboard/:id",
+    views: {
+      'menuContent': {
+        templateUrl: "templates/tripdashboard.html",
+        controller: 'TripDashboardCtrl'
+      }
+    }
+  })
+  .state('app.users', {
+    url: "/users",
+    views: {
+      'menuContent': {
+        templateUrl: "templates/users.html",
+        controller: 'AllUsersCtrl'
+      }
+    }
+  })
+  .state('app.adduser', {
+    url: "/adduser",
+    views: {
+      'menuContent': {
+        templateUrl: "templates/adduser.html",
+        controller: 'AddUserCtrl'
+      }
+    }
+  })
+  .state('app.edituser', {
+    url: "/edituser/:id",
+    views: {
+      'menuContent': {
+        templateUrl: "templates/adduser.html",
+        controller: 'EditUserCtrl'
+      }
+    }
+  })
+  .state('app.userdashboard', {
+    url: "/userdashboard/:id",
+    views: {
+      'menuContent': {
+        templateUrl: "templates/userdashboard.html",
+        controller: 'UserDashboardCtrl'
+      }
+    }
+  })  
   .state('app.profile', {
     url: "/profile",
     views: {
@@ -171,15 +207,6 @@ angular.module('starter', ['ionic', 'ngCordova', 'starter.controllers'])
       'menuContent': {
         templateUrl: "templates/dashboard.html",
         controller: 'DashboardCtrl'
-      }
-    }
-  })
-  .state('app.tripdashboard', {
-    url: "/tripdashboard/:id",
-    views: {
-      'menuContent': {
-        templateUrl: "templates/tripdashboard.html",
-        controller: 'TripDashboardCtrl'
       }
     }
   })
