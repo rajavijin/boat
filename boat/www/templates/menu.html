@@ -8,10 +8,10 @@
         <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
         </button>
       </ion-nav-buttons>
+      <ion-nav-buttons side="right"><button ng-show="filters" class="button button-icon button-clear ion-funnel" menu-toggle="right"></button></ion-nav-buttons>
     </ion-nav-bar>
     <ion-nav-view name="menuContent"></ion-nav-view>
   </ion-side-menu-content>
-
   <ion-side-menu side="left">
     <ion-content>
       <ion-list>
@@ -47,4 +47,17 @@
       </ion-list>
     </ion-content>
   </ion-side-menu>
+  <ion-side-menu ng-if="filters" side="right">
+    <ion-content drag-content="false">
+       <form>
+          <ion-list class="filters">
+            <ion-item class="item-icon-left positive"><i class="icon ion-clock"></i><strong>Year</strong></ion-item>
+            <ion-radio class="item item-complex" name="year" ng-model="filtersData.year" ng-repeat="(k,v) in filtersData.years" ng-value="{{k}}">{{v}}</ion-radio>
+            <ion-item class="item-icon-left positive"><i class="icon ion-clipboard"></i><strong>Month</strong></ion-item>
+            <ion-radio class="item item-complex" name="month" ng-model="filtersData.month" ng-repeat="(k,v) in filtersData.months" ng-value="{{k}}">{{v}}</ion-radio>
+            <ion-item class="item submit first"><button menu-close class="button icon-left ion-chevron-left button-block button-positive" ng-click="dashboardFilters()">Go</button></ion-item>
+          </ion-list>
+       </form>
+    </ion-content>
+  </ion-side-menu>  
 </ion-side-menus>

@@ -1,6 +1,6 @@
 angular.module('starter.controllers', ['starter.services'])
 
-.controller('AppCtrl', function($scope, $ionicModal, $timeout, MyService) {
+.controller('AppCtrl', function($scope, $rootScope, MyService) {
   user = JSON.parse(localStorage.getItem('user')) || user;
   $scope.username = user.name;
   $scope.uid = localStorage.getItem('uid') || '';
@@ -11,6 +11,7 @@ angular.module('starter.controllers', ['starter.services'])
     $scope.authorized = false;
     //$scope.menuLinks = {"Links":[{}]};
   }
+
   // With the new view caching in Ionic, Controllers are only called
   // when they are recreated or on app start, instead of every page change.
   // To listen for when this page is active (for example, to refresh data),
@@ -49,9 +50,33 @@ angular.module('starter.controllers', ['starter.services'])
     }, 1000);
   };*/
 })
-.controller('DashboardCtrl', function($scope, $state, $cordovaSQLite, MyService) {
+.controller('DashboardCtrl', function($scope, $rootScope, $state, $cordovaSQLite, MyService) {
+  $rootScope.filters = true;
+  if(localStorage.getItem('filterdata')) {
+    filtersData = JSON.parse(localStorage.getItem('filterdata'));
+  } else {
+    var currentyear = new Date().getFullYear();
+    filtersData.years = [currentyear];
+    filtersData.year = 0;
+    filtersData.months = ['All'];
+    filtersData.month = 0;
+    localStorage.setItem('filtersData', JSON.stringify(filtersData));
+  }
+  $rootScope.filtersData = filtersData;
+  $rootScope.dashboardFilters = function() {
+    console.log("filter dashboard data", $rootScope.filtersData);
+    $scope.getTrips();
+  }
   $scope.getTrips = function() {
-    var query = 'SELECT * from trips where boatid = "'+user.boatid+'"';
+    if($rootScope.filtersData.month == 0) {
+      var startrange = $rootScope.filtersData.years[$rootScope.filtersData.year] +'-01-01';
+      var endrange = $rootScope.filtersData.years[$rootScope.filtersData.year] +'-12-31';
+    } else {
+      var startrange = $rootScope.filtersData.years[$rootScope.filtersData.year] +'-'+MyService.monthIndex($rootScope.filtersData.months[$rootScope.filtersData.month])+'-01';
+      var endrange = $rootScope.filtersData.years[$rootScope.filtersData.year] +'-'+MyService.monthIndex($rootScope.filtersData.months[$rootScope.filtersData.month])+'-31';
+    }
+    var query = 'SELECT * from trips where startdate between "'+startrange+'" AND "'+endrange+'" ORDER BY startdate';
+    console.log("query", query);
     $cordovaSQLite.execute(db, query).then(function(res) {
       totalrecords = res.rows.length;
       if(totalrecords > 0) {
@@ -59,6 +84,15 @@ angular.module('starter.controllers', ['starter.services'])
         var trips = [];
         for (var i = 0; i < res.rows.length; i++) {
           var row = res.rows[i];
+          var start = new Date(row.startdate);
+          console.log("month", MyService.months(start.getMonth()));
+          if($rootScope.filtersData.months.indexOf(MyService.months(start.getMonth())) == -1) {
+           $rootScope.filtersData.months.push(MyService.months(start.getMonth())); 
+          }
+          if($rootScope.filtersData.years.indexOf(start.getFullYear()) == -1) {
+           $rootScope.filtersData.years.push(start.getFullYear()); 
+          }
+          console.log("rootscope filters", $rootScope.filtersData);
           console.log("row", row);
           trips.push(row);
         };
@@ -113,7 +147,7 @@ angular.module('starter.controllers', ['starter.services'])
 .controller('AllTripsCtrl', function($scope, $state, $cordovaSQLite, MyService) {
   $scope.filterToggle = function() {$scope.filterStatus = !$scope.filterStatus;}
   $scope.getTrips = function() {
-    var query = 'SELECT rowid, * from trips where boatid = "'+user.boatid+'"';
+    var query = 'SELECT * from trips where boatid = "'+user.boatid+'"';
     $cordovaSQLite.execute(db, query).then(function(res) {
       totalrecords = res.rows.length;
       if(totalrecords > 0) {
@@ -153,7 +187,7 @@ angular.module('starter.controllers', ['starter.services'])
     $state.go('app.edittrip', {id:$stateParams.id}, {reload:true});
   }
   $scope.getTripData = function() {
-    var query = 'SELECT * from trips where rowid = "'+$stateParams.id+'"';
+    var query = 'SELECT * from trips where id = "'+$stateParams.id+'"';
     $cordovaSQLite.execute(db, query).then(function(res) {
       totalrecords = res.rows.length;
       if(totalrecords > 0) {
@@ -161,8 +195,8 @@ angular.module('starter.controllers', ['starter.services'])
         var trip = res.rows.item(0);
         var startdate = new Date(trip.startdate);
         var enddate = new Date(trip.enddate);
-        trip.startdate = startdate.getDate() +' '+months[startdate.getMonth()]+' '+startdate.getFullYear();
-        trip.enddate = enddate.getDate() +' '+months[enddate.getMonth()]+' '+enddate.getFullYear();
+        trip.startdate = startdate.getDate() +' '+MyService.months(startdate.getMonth())+' '+startdate.getFullYear();
+        trip.enddate = enddate.getDate() +' '+MyService.months(enddate.getMonth())+' '+enddate.getFullYear();
         trip.members = JSON.parse(trip.members);
         trip.extra = JSON.parse(trip.extra);
         console.log("trip dash", trip);
@@ -186,7 +220,7 @@ angular.module('starter.controllers', ['starter.services'])
     }*/
   }
 })
-.controller('AddtripCtrl', function($scope, $state, $cordovaSQLite, MyService) {
+.controller('AddtripCtrl', function($scope, $state, $filter, $cordovaSQLite, MyService) {
   console.log("current user", user);
   var addtrip = {members:{}};
   addtrip.boatid = user.boatid;
@@ -211,7 +245,12 @@ angular.module('starter.controllers', ['starter.services'])
   $scope.removeExtra = function(index) {
     $scope.addtrip.extra.splice(index, 1);
   }
-
+  $scope.$watch('addtrip.startdate', function(startdate){
+    $scope.addtrip.startdateformatted = $filter('date')(startdate, 'yyyy-MM-dd');
+  });
+  $scope.$watch('addtrip.enddate', function(enddate){
+    $scope.addtrip.enddateformatted = $filter('date')(enddate, 'yyyy-MM-dd');
+  });
   $scope.submit = function() {
     var oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
     var totalDays = Math.round(Math.abs(($scope.addtrip.startdate.getTime() - $scope.addtrip.enddate.getTime())/(oneDay)));
@@ -219,7 +258,7 @@ angular.module('starter.controllers', ['starter.services'])
     tripdetails.members = [];
     var totalmembers = 0;
     var totalpartitions = 0;
-    tripdetails.name = tripdetails.startdate.getDate() +' '+months[tripdetails.startdate.getMonth()]+' '+tripdetails.startdate.getFullYear();
+    tripdetails.name = tripdetails.startdate.getDate() +' '+MyService.months(tripdetails.startdate.getMonth())+' '+tripdetails.startdate.getFullYear();
     for (var i = 0; i < user.members.length; i++) {
       if(tripdetails.allmembers[user.members[i]._id]) {
         totalmembers++;
@@ -258,16 +297,20 @@ angular.module('starter.controllers', ['starter.services'])
     //var query = "INSERT into trips ("+keys.substring(0, keys.length - 1)+") VALUES ("+vals.substring(0, vals.length - 1)+")";
     var query = "INSERT into trips (name,boatname,boatid,startdate,enddate,income,diesel,ice,net,food,bata,balance,ownerincome,workerincome,totalspending,ownerp,workerp,bataperday,extra,members) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     console.log("query", query);
-    $cordovaSQLite.execute(db, query, [tripdetails.name,tripdetails.boatname,tripdetails.boatid,tripdetails.startdate,tripdetails.enddate,tripdetails.income,tripdetails.diesel,tripdetails.ice,tripdetails.net,tripdetails.food,tripdetails.bata,tripdetails.balance,tripdetails.ownerincome,tripdetails.workerincome,tripdetails.totalspending, tripdetails.ownerp, tripdetails.workerp, tripdetails.bataperday, JSON.stringify(tripdetails.extra), JSON.stringify(tripdetails.members)]).then(function(res) {
+    $cordovaSQLite.execute(db, query, [tripdetails.name,tripdetails.boatname,tripdetails.boatid,tripdetails.startdateformatted,tripdetails.enddateformatted,tripdetails.income,tripdetails.diesel,tripdetails.ice,tripdetails.net,tripdetails.food,tripdetails.bata,tripdetails.balance,tripdetails.ownerincome,tripdetails.workerincome,tripdetails.totalspending, tripdetails.ownerp, tripdetails.workerp, tripdetails.bataperday, JSON.stringify(tripdetails.extra), JSON.stringify(tripdetails.members)]).then(function(res) {
       console.log("insertId: " + res.insertId);
-      $state.go('app.tripdashboard', {id:res.insertId}, {reload:true});
+      tripdetails.startdate = tripdetails.startdateformatted;
+      tripdetails.enddate = tripdetails.enddateformatted;
+      MyService.addTrip(tripdetails).then(function(tripval) {
+        $state.go('app.tripdashboard', {id:res.insertId}, {reload:true});
+      })
     })
   }
 })
-.controller('EditTripCtrl', function($scope, $state, $stateParams, $cordovaSQLite) {
+.controller('EditTripCtrl', function($scope, $state, $stateParams, $cordovaSQLite, MyService) {
   console.log("edit Trip Controller", $stateParams);
   $scope.members = user.members;
-  var query = 'SELECT * from trips where rowid = "'+$stateParams.id+'"';
+  var query = 'SELECT * from trips where id = "'+$stateParams.id+'"';
   $cordovaSQLite.execute(db, query).then(function(res) {
     totalrecords = res.rows.length;
     if(totalrecords > 0) {
@@ -299,7 +342,7 @@ angular.module('starter.controllers', ['starter.services'])
     var tripdetails = $scope.addtrip;
     var totalmembers = 0;
     var totalpartitions = 0;
-    tripdetails.name = tripdetails.startdate.getDate() +' '+months[tripdetails.startdate.getMonth()]+' '+tripdetails.startdate.getFullYear();
+    tripdetails.name = tripdetails.startdate.getDate() +' '+MyService.months(tripdetails.startdate.getMonth())+' '+tripdetails.startdate.getFullYear();
     for (var i = 0; i < user.members.length; i++) {
       if(tripdetails.allmembers[user.members[i]._id]) {
         totalmembers++;
@@ -335,7 +378,7 @@ angular.module('starter.controllers', ['starter.services'])
       }
     };
     tripdetails.members = tripdetails.updatedmembers;
-    var query = "UPDATE trips set name = ?, boatname = ?, boatid = ?, startdate = ?, enddate = ?, income = ?, diesel = ?, ice = ?, net = ?, food = ?, bata = ?, balance = ?, ownerincome = ?, workerincome = ?, totalspending = ?, ownerp = ?, workerp = ?, bataperday = ?, extra = ?, members = ? WHERE rowid = ?";
+    var query = "UPDATE trips set name = ?, boatname = ?, boatid = ?, startdate = ?, enddate = ?, income = ?, diesel = ?, ice = ?, net = ?, food = ?, bata = ?, balance = ?, ownerincome = ?, workerincome = ?, totalspending = ?, ownerp = ?, workerp = ?, bataperday = ?, extra = ?, members = ? WHERE id = ?";
     console.log("query", query);
     $cordovaSQLite.execute(db, query, [tripdetails.name,tripdetails.boatname,tripdetails.boatid,tripdetails.startdate,tripdetails.enddate,tripdetails.income,tripdetails.diesel,tripdetails.ice,tripdetails.net,tripdetails.food,tripdetails.bata,tripdetails.balance,tripdetails.ownerincome,tripdetails.workerincome,tripdetails.totalspending, tripdetails.ownerp, tripdetails.workerp, tripdetails.bataperday, JSON.stringify(tripdetails.extra), JSON.stringify(tripdetails.members), $stateParams.id]).then(function(res) {
       $state.go('app.tripdashboard', {id:$stateParams.id}, {reload:true});

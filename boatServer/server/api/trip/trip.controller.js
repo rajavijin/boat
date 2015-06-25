@@ -31,7 +31,10 @@ exports.trips = function(req, res) {
 
 // Creates a new trip in the DB.
 exports.create = function(req, res) {
+  console.log("requested", req.body);
   Trip.create(req.body, function(err, trip) {
+    console.log("Trip", trip);
+    console.log("Trip add error:", err);
     if(err) { return handleError(res, err); }
     return res.json(201, trip);
   });
