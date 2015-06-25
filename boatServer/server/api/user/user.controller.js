@@ -1,5 +1,5 @@
 'use strict';
-
+var _ = require('lodash');
 var User = require('./user.model');
 var passport = require('passport');
 var config = require('../../config/environment');

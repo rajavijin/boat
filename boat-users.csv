@@ -1,13 +1,13 @@
-Name;Role;Mobile;Address;SalaryLevel
-Reegan;captain;9999999999;leon nagar, colachel;1.25
-kingson;vice-captain;9999999998;leon nagar, colachel;1
-subal;worker;9999999997;leon nagar, colachel;1
-nijo;worker;9999999996;leon nagar, colachel;1
-joseph;worker;9999999995;colachel;1
-starvin;worker;9999999993;colachel;1
-miles;worker;9999999992;colachel;1
-antony;worker;9999999990;leon nagar, colachel;1
-sathish;worker;9999999989;arokiapuram;1
-tharun;worker;9999999988;arokiapuram;1
-jenish;worker;9999999987;arokiapuram;1
-arun;worker;9999999986;arokiapuram;0.5
+Name	Role	Mobile	SalaryLevel
+Arul	captain	9999999999	1.25
+Rajesh	vice-captain	9999999998	1
+Antony	worker	9999999997	1
+Ramesh	worker	9999999996	1
+Raj	worker	9999999995	1
+Infant	worker	9999999993	1
+Jegan	worker	9999999992	1
+Raja	worker	9999999990	1
+Jinish	worker	9999999989	1
+Anto	worker	9999999988	1
+Britto	worker	9999999987	1
+Arun	worker	9999999986	0.5
