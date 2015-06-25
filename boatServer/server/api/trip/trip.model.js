@@ -14,13 +14,16 @@ var TripSchema = new Schema({
   ice: Number,
   net: Number,
   food: Number,
-  extra: Number,
+  extra: Array,
   bata: Number,
   members: Array,
   balance: Number,
   ownerincome: Number,
   workerincome: Number,
   totalspending: Number,
+  ownerp: Number,
+  workerp: Number,
+  bataperday: Number,
   active: Boolean
 });
 

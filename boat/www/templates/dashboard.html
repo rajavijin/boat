@@ -2,6 +2,9 @@
    <ion-nav-title>{{title}} Dashboard</ion-nav-title>
    <ion-content class="has-header">
       <ion-refresher pulling-text="Pull to refresh" on-refresh="getTrips()"></ion-refresher>
+      <ion-list ng-if="dashboardStatus == 'empty'">
+         <ion-item class="item item-icon-left"><i class="icon ion-ios-list"></i>Dashboard is empty</item>
+      </ion-list>
       <chart id="income" config="incomeConfig" ng-if="dashboardStatus != 'empty'"></chart>
       <div class="padding"></div>
       <chart id="spending" config="spendingConfig" ng-if="dashboardStatus != 'empty'"></chart>

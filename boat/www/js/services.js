@@ -109,6 +109,25 @@ angular.module('starter.services', [])
       }); 
       return defer.promise;
     },
+    months: function(index) {
+      var months = [
+        "Jan", "Feb", "Mar",
+        "Apr", "May", "Jun", "Jul",
+        "Aug", "Sep", "Oct",
+        "Nov", "Dec"
+      ];
+      return months[index];      
+    },
+    monthIndex: function(month) {
+      var months = [
+        "Jan", "Feb", "Mar",
+        "Apr", "May", "Jun", "Jul",
+        "Aug", "Sep", "Oct",
+        "Nov", "Dec"
+      ];
+      var mi = months.indexOf(month) + 1;
+      return (mi.toString().length == 1) ? 0+mi.toString() : mi;
+    },
     online: function() {
       return true;
       if(navigator.platform == "Linux x86_64") {
