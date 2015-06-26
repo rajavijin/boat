@@ -41,7 +41,7 @@ angular.module('boatServerApp')
                 console.log("boat", boat);
 		        var owner = {};
 		        owner.role = "owner";
-                owner.email = "demo";
+                owner.email = boat.mobile;
 		        owner.mobile = boat.mobile;
 		        owner.name = boat.owner;
 		        owner.import = true;

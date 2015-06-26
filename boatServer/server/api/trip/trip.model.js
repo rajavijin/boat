@@ -24,6 +24,7 @@ var TripSchema = new Schema({
   ownerp: Number,
   workerp: Number,
   bataperday: Number,
+  created: Date,
   active: Boolean
 });
 

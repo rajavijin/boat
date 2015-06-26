@@ -14,6 +14,8 @@ var UserSchema = new Schema({
   address: String,
   salarylevel: Number,
   remainingbalance: Number,
+  validityfrom: Date,
+  validitytill: Date,
   total:Number,
   pepper: String,
   hashedPassword: String,
