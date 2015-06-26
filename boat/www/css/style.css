@@ -28,3 +28,7 @@
   color: #444;
   font-size: 16px;
 }
+.list .item, .title {
+  text-transform:capitalize;
+  white-space: normal;
+}

@@ -9,6 +9,9 @@
 	<button class="button button-icon button-clear ion-ios-search" ng-click="filterToggle()"></button>
     </ion-nav-buttons>
    <ion-content class="has-header">
+      <ion-list ng-if="dashboardStatus == 'empty'">
+         <ion-item class="item item-icon-left"><i class="icon ion-ios-list"></i>No Trips Added Yet</item>
+      </ion-list>
    	  <div ng-if="filterStatus" style="height:44px;"></div>
       <ion-list>
          <ion-item collection-repeat="trip in trips | filter:query.search.value" class="item item-icon-left positive" href="#/app/tripdashboard/{{trip.id}}">
