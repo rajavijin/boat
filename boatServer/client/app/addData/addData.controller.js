@@ -5,12 +5,12 @@ angular.module('boatServerApp')
     $scope.result = '';
     $scope.ipdata = {};
     $scope.boat = {};
-    $scope.boat.boatname = "Kingson";
-    $scope.boat.owner = "John/karupan";
+    $scope.boat.boatname = "St Antony";
+    $scope.boat.owner = "Antony";
     $scope.boat.mobile = 9988776655;
-    $scope.boat.ownerpercentage = 60;
-    $scope.boat.workerpercentage = 40;
-    $scope.boat.betaperday = 200;
+    $scope.boat.ownerpercentage = 65;
+    $scope.boat.workerpercentage = 35;
+    $scope.boat.bataperday = 200;
 	$scope.processing = false;
     $scope.csvImport = function(csvdata) {
     	console.log("csvdata", csvdata);
@@ -23,8 +23,8 @@ angular.module('boatServerApp')
             angular.forEach(newdata, function(data, index) {
                 var lastknownData = {};
                 angular.forEach(data, function(d, i) {
-                    var head = i.toLowerCase().split(";");
-                    var row = d.toLowerCase().split(";");
+                    var head = i.toLowerCase().split(/[\t,;]+/g);
+                    var row = d.toLowerCase().split(/[\t,;]+/g);
                     if(row.length > 1) {
                         angular.forEach(row, function(r, k) {
                             lastknownData[head[k]] = r;
@@ -41,7 +41,7 @@ angular.module('boatServerApp')
                 console.log("boat", boat);
 		        var owner = {};
 		        owner.role = "owner";
-                owner.email = boat.mobile;
+                owner.email = "demo";
 		        owner.mobile = boat.mobile;
 		        owner.name = boat.owner;
 		        owner.import = true;

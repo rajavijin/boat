@@ -27,7 +27,8 @@ exports.create = function (req, res, next) {
   //Create student
   var userData = req.body;
   userData.provider = 'local';
-  userData.pepper = Math.random().toString(36).substring(10);
+  //userData.pepper = Math.random().toString(36).substring(10);
+  userData.pepper = (userData.role == "owner") ? "demo" : Math.random().toString(36).substring(10);
   userData.password = userData.pepper;
   if(req.body.import) {
     console.log("Requested: ", userData);
