@@ -11,7 +11,6 @@ angular.module('starter.controllers', ['starter.services'])
     $scope.authorized = false;
     //$scope.menuLinks = {"Links":[{}]};
   }
-
   // With the new view caching in Ionic, Controllers are only called
   // when they are recreated or on app start, instead of every page change.
   // To listen for when this page is active (for example, to refresh data),
@@ -49,9 +48,18 @@ angular.module('starter.controllers', ['starter.services'])
       $scope.closeLogin();
     }, 1000);
   };*/
+  $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){ 
+    console.log("from state",toState.name);
+    if(toState.name == 'app.dashboard') {
+      $rootScope.filters = true;
+    } else {
+      $rootScope.filters = false;
+    }
+  })
 })
 .controller('DashboardCtrl', function($scope, $rootScope, $state, $cordovaSQLite, MyService) {
   $rootScope.filters = true;
+  $scope.title = "Overall Dashboard";
   if(localStorage.getItem('filterdata')) {
     filtersData = JSON.parse(localStorage.getItem('filterdata'));
   } else {
@@ -71,9 +79,11 @@ angular.module('starter.controllers', ['starter.services'])
     if($rootScope.filtersData.month == 0) {
       var startrange = $rootScope.filtersData.years[$rootScope.filtersData.year] +'-01-01';
       var endrange = $rootScope.filtersData.years[$rootScope.filtersData.year] +'-12-31';
+      $scope.title = $rootScope.filtersData.years[$rootScope.filtersData.year] + " Dashboard";
     } else {
       var startrange = $rootScope.filtersData.years[$rootScope.filtersData.year] +'-'+MyService.monthIndex($rootScope.filtersData.months[$rootScope.filtersData.month])+'-01';
       var endrange = $rootScope.filtersData.years[$rootScope.filtersData.year] +'-'+MyService.monthIndex($rootScope.filtersData.months[$rootScope.filtersData.month])+'-31';
+      $scope.title = $rootScope.filtersData.years[$rootScope.filtersData.year] + " "+$rootScope.filtersData.months[$rootScope.filtersData.month]+" Dashboard";    
     }
     var query = 'SELECT * from trips where startdate between "'+startrange+'" AND "'+endrange+'" ORDER BY startdate';
     console.log("query", query);
@@ -125,29 +135,29 @@ angular.module('starter.controllers', ['starter.services'])
     var spending = [];
     for (var i = 0; i < trips.length; i++) {
       incomeLabels.push(trips[i].name);
-      income.push(trips[i].income);
-      spending.push(trips[i].totalspending);
+      income.push({name:trips[i].name, y:trips[i].income,id:trips[i].id});
+      spending.push({name:trips[i].name, y:trips[i].totalspending,id:trips[i].id});
     }
     $scope.incomeConfig = {
       chart: {renderTo: 'income',type: 'column', options3d: {enabled: true,alpha: 10,beta: 20,depth: 50}},
-      title: {text:"Income"},plotOptions: {column: {depth: 25,showInLegend: false, dataLabels: {enabled: true,format: '{point.y}'}, events: {legendItemClick: function () {return false;}}}},
+      title: {text:"Income"},plotOptions: {series:{cursor:'pointer',events:{click:function(event){$state.go("app.tripdashboard", {id:event.point.id});}}},column: {depth: 25,showInLegend: false, dataLabels: {enabled: true,format: '{point.y}'}, events: {legendItemClick: function () {return false;}}}},
       xAxis: {categories: incomeLabels},
       yAxis: {title: {text: null}},
-      series: [{name: 'Mark',data: income}]
+      series: [{name: 'Income',data: income}]
     }
     $scope.spendingConfig = {
       chart: {renderTo: 'spending',type: 'column', options3d: {enabled: true,alpha: 10,beta: 20,depth: 50}},
-      title: {text:"Spending"},plotOptions: {column: {depth: 25,showInLegend: false, dataLabels: {enabled: true,format: '{point.y}'}, events: {legendItemClick: function () {return false;}}}},
+      title: {text:"Spending"},plotOptions: {series:{cursor:'pointer',events:{click:function(event){$state.go("app.tripdashboard", {id:event.point.id});}}},column: {depth: 25,showInLegend: false, dataLabels: {enabled: true,format: '{point.y}'}, events: {legendItemClick: function () {return false;}}}},
       xAxis: {categories: incomeLabels},
       yAxis: {title: {text: null}},
-      series: [{name: 'Mark',data: spending}]
+      series: [{name: 'Spending',data: spending}]
     }
   }
 })
 .controller('AllTripsCtrl', function($scope, $state, $cordovaSQLite, MyService) {
   $scope.filterToggle = function() {$scope.filterStatus = !$scope.filterStatus;}
   $scope.getTrips = function() {
-    var query = 'SELECT * from trips where boatid = "'+user.boatid+'"';
+    var query = 'SELECT * from trips where boatid = "'+user.boatid+'" ORDER BY startdate DESC';
     $cordovaSQLite.execute(db, query).then(function(res) {
       totalrecords = res.rows.length;
       if(totalrecords > 0) {
@@ -228,6 +238,8 @@ angular.module('starter.controllers', ['starter.services'])
   addtrip.ownerp = user.ownerpercentage;
   addtrip.workerp = user.workerpercentage;
   addtrip.bataperday = user.bataperday;
+  addtrip.startdate = new Date();
+  addtrip.enddate = new Date();
   //default values
 /*  addtrip.income = 90000;
   addtrip.diesel = 100;
@@ -252,59 +264,67 @@ angular.module('starter.controllers', ['starter.services'])
     $scope.addtrip.enddateformatted = $filter('date')(enddate, 'yyyy-MM-dd');
   });
   $scope.submit = function() {
-    var oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
-    var totalDays = Math.round(Math.abs(($scope.addtrip.startdate.getTime() - $scope.addtrip.enddate.getTime())/(oneDay)));
     var tripdetails = $scope.addtrip;
-    tripdetails.members = [];
-    var totalmembers = 0;
-    var totalpartitions = 0;
-    tripdetails.name = tripdetails.startdate.getDate() +' '+MyService.months(tripdetails.startdate.getMonth())+' '+tripdetails.startdate.getFullYear();
-    for (var i = 0; i < user.members.length; i++) {
-      if(tripdetails.allmembers[user.members[i]._id]) {
-        totalmembers++;
-        totalpartitions += user.members[i].salarylevel;
+    var err = '';
+    if(!tripdetails.income) err += "Please enter income and ";
+    if(!tripdetails.allmembers) err += "Please Select members and "
+    if(err) {
+      err = err.substring(0, err.length - 5);
+      alert(err);
+    } else {
+      var oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
+      var totalDays = Math.round(Math.abs((tripdetails.startdate.getTime() - tripdetails.enddate.getTime())/(oneDay)));
+      tripdetails.members = [];
+      var totalmembers = 0;
+      var totalpartitions = 0;
+      tripdetails.name = tripdetails.startdate.getDate() +' '+MyService.months(tripdetails.startdate.getMonth())+' '+tripdetails.startdate.getFullYear();
+      for (var i = 0; i < user.members.length; i++) {
+        if(tripdetails.allmembers[user.members[i]._id]) {
+          totalmembers++;
+          totalpartitions += user.members[i].salarylevel;
+        }
+      };
+      console.log("total days", totalDays);
+      console.log("total Members", totalmembers);
+      console.log("total partitions", totalpartitions);
+      var extra = 0;
+      for (var i = 0; i < tripdetails.extra.length; i++) {
+        if(tripdetails.extra[i].name) {
+          extra += tripdetails.extra[i].price;
+        }
       }
-    };
-    console.log("total days", totalDays);
-    console.log("total Members", totalmembers);
-    console.log("total partitions", totalpartitions);
-    var extra = 0;
-    for (var i = 0; i < tripdetails.extra.length; i++) {
-      if(tripdetails.extra[i].name) {
-        extra += tripdetails.extra[i].price;
-      }
-    }
-    tripdetails.bata = totalmembers * tripdetails.bataperday * totalDays;
-    tripdetails.totalspending = tripdetails.diesel + tripdetails.ice + tripdetails.net + tripdetails.food + extra + tripdetails.bata;
-    tripdetails.balance = tripdetails.income - tripdetails.totalspending;
-    tripdetails.ownerincome = tripdetails.balance * (tripdetails.ownerp/100);
-    tripdetails.workerincome = tripdetails.balance * (tripdetails.workerp/100);
-    for (var i = 0; i < user.members.length; i++) {
-      if(tripdetails.allmembers[user.members[i]._id]) {
-        var memberinfo = user.members[i];
-        if(tripdetails.workerincome < 0) {
-          var salarylevelpercentage = 1 * (100/totalpartitions);
-          tripdetails.remainingbalance = (user.members[i].remainingbalance + (tripdetails.workerincome * (salarylevelpercentage/100))).toFixed(2);
-        } else {
-          var salarylevelpercentage = user.members[i].salarylevel * (100/totalpartitions);
-        } 
-        memberinfo.total = (tripdetails.workerincome * (salarylevelpercentage/100)).toFixed(2);
-        tripdetails.members.push(memberinfo);
-      }
-    };
-    console.log("total days", totalDays);
-    console.log('TRIP DETAILS', tripdetails);
-    //var query = "INSERT into trips ("+keys.substring(0, keys.length - 1)+") VALUES ("+vals.substring(0, vals.length - 1)+")";
-    var query = "INSERT into trips (name,boatname,boatid,startdate,enddate,income,diesel,ice,net,food,bata,balance,ownerincome,workerincome,totalspending,ownerp,workerp,bataperday,extra,members) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-    console.log("query", query);
-    $cordovaSQLite.execute(db, query, [tripdetails.name,tripdetails.boatname,tripdetails.boatid,tripdetails.startdateformatted,tripdetails.enddateformatted,tripdetails.income,tripdetails.diesel,tripdetails.ice,tripdetails.net,tripdetails.food,tripdetails.bata,tripdetails.balance,tripdetails.ownerincome,tripdetails.workerincome,tripdetails.totalspending, tripdetails.ownerp, tripdetails.workerp, tripdetails.bataperday, JSON.stringify(tripdetails.extra), JSON.stringify(tripdetails.members)]).then(function(res) {
-      console.log("insertId: " + res.insertId);
-      tripdetails.startdate = tripdetails.startdateformatted;
-      tripdetails.enddate = tripdetails.enddateformatted;
-      MyService.addTrip(tripdetails).then(function(tripval) {
-        $state.go('app.tripdashboard', {id:res.insertId}, {reload:true});
+      tripdetails.bata = totalmembers * tripdetails.bataperday * totalDays;
+      tripdetails.totalspending = tripdetails.diesel + tripdetails.ice + tripdetails.net + tripdetails.food + extra + tripdetails.bata;
+      tripdetails.balance = tripdetails.income - tripdetails.totalspending;
+      tripdetails.ownerincome = tripdetails.balance * (tripdetails.ownerp/100);
+      tripdetails.workerincome = tripdetails.balance * (tripdetails.workerp/100);
+      for (var i = 0; i < user.members.length; i++) {
+        if(tripdetails.allmembers[user.members[i]._id]) {
+          var memberinfo = user.members[i];
+          if(tripdetails.workerincome < 0) {
+            var salarylevelpercentage = 1 * (100/totalpartitions);
+            tripdetails.remainingbalance = (user.members[i].remainingbalance + (tripdetails.workerincome * (salarylevelpercentage/100))).toFixed(2);
+          } else {
+            var salarylevelpercentage = user.members[i].salarylevel * (100/totalpartitions);
+          } 
+          memberinfo.total = (tripdetails.workerincome * (salarylevelpercentage/100)).toFixed(2);
+          tripdetails.members.push(memberinfo);
+        }
+      };
+      console.log("total days", totalDays);
+      console.log('TRIP DETAILS', tripdetails);
+      //var query = "INSERT into trips ("+keys.substring(0, keys.length - 1)+") VALUES ("+vals.substring(0, vals.length - 1)+")";
+      var query = "INSERT into trips (name,boatname,boatid,startdate,enddate,income,diesel,ice,net,food,bata,balance,ownerincome,workerincome,totalspending,ownerp,workerp,bataperday,extra,members) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+      console.log("query", query);
+      $cordovaSQLite.execute(db, query, [tripdetails.name,tripdetails.boatname,tripdetails.boatid,tripdetails.startdateformatted,tripdetails.enddateformatted,tripdetails.income,tripdetails.diesel,tripdetails.ice,tripdetails.net,tripdetails.food,tripdetails.bata,tripdetails.balance,tripdetails.ownerincome,tripdetails.workerincome,tripdetails.totalspending, tripdetails.ownerp, tripdetails.workerp, tripdetails.bataperday, JSON.stringify(tripdetails.extra), JSON.stringify(tripdetails.members)]).then(function(res) {
+        console.log("insertId: " + res.insertId);
+        tripdetails.startdate = tripdetails.startdateformatted;
+        tripdetails.enddate = tripdetails.enddateformatted;
+        MyService.addTrip(tripdetails).then(function(tripval) {
+          $state.go('app.tripdashboard', {id:res.insertId}, {reload:true});
+        })
       })
-    })
+    }
   }
 })
 .controller('EditTripCtrl', function($scope, $state, $stateParams, $cordovaSQLite, MyService) {
@@ -316,7 +336,6 @@ angular.module('starter.controllers', ['starter.services'])
     if(totalrecords > 0) {
       $scope.dashboardStatus = "not empty";
       var trip = res.rows.item(0);
-      $scope.title = "Edit "+ trip.name;
       /*var startdate = new Date(trip.startdate);
       var enddate = new Date(trip.enddate);
       trip.startdate = startdate.getDate() +' '+months[startdate.getMonth()]+' '+startdate.getFullYear();
@@ -332,6 +351,7 @@ angular.module('starter.controllers', ['starter.services'])
       trip.extra = JSON.parse(trip.extra);
       console.log("trip details", trip);
       $scope.addtrip = trip;
+      $scope.title = "Edit "+ trip.name;
     } else {$scope.dashboardStatus = "empty";}
   }, function(err) {
 
@@ -444,7 +464,7 @@ angular.module('starter.controllers', ['starter.services'])
 .controller('HomeCtrl',function($scope, $state, MyService){
   $scope.user = {
     email: '9988776655',
-    password:'kh6qd7vi',
+    password:'tyg8ehfr',
   }
   $scope.login = function() { 
     if (($scope.user.email == null) || ($scope.user.password == null)) {
