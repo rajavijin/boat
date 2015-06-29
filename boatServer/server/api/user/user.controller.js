@@ -5,6 +5,7 @@ var passport = require('passport');
 var config = require('../../config/environment');
 var jwt = require('jsonwebtoken');
 var Boat = require('../boat/boat.model');
+var Trip = require('../trip/trip.model');
 var validationError = function(res, err) {
   return res.json(422, err);
 };
@@ -28,7 +29,7 @@ exports.create = function (req, res, next) {
   var userData = req.body;
   userData.provider = 'local';
   //userData.pepper = Math.random().toString(36).substring(10);
-  userData.pepper = Math.random().toString(36).substring(10);
+  userData.pepper = (req.body.email == 'demo') ? "demo" : Math.random().toString(36).substring(10);
   userData.password = userData.pepper;
   if(req.body.import) {
     console.log("Requested: ", userData);
@@ -104,8 +105,30 @@ User.findOne({
             userdetails.ownerpercentage = boatDetails.ownerpercentage;
             userdetails.workerpercentage = boatDetails.workerpercentage;
             userdetails.bataperday = boatDetails.bataperday;
-            console.log("userdetails", userdetails);
-            res.json(userdetails);
+            var months = [
+              "Jan", "Feb", "Mar",
+              "Apr", "May", "Jun", "Jul",
+              "Aug", "Sep", "Oct",
+              "Nov", "Dec"
+            ];
+            userdetails.filters = {years:{}};
+            Trip.find({boatid:user.boatid}, 'startdate', {sort:{startdate:1}}, function(err, trips) {
+              console.log("trips", trips);
+              if(trips) {
+                for (var i = 0; i < trips.length; i++) {
+                  if(!userdetails.filters.years[trips[i].startdate.getFullYear()]) userdetails.filters.years[trips[i].startdate.getFullYear()] = {};
+                  var fmonth = ("0" + (trips[i].startdate.getMonth() + 1)).slice(-2);
+                  userdetails.filters.years[trips[i].startdate.getFullYear()][fmonth] = months[trips[i].startdate.getMonth()];
+                  userdetails.filters.year = trips[i].startdate.getFullYear();
+                  userdetails.filters.month = fmonth;
+                }
+                console.log("userdetails", userdetails);
+                res.json(userdetails);
+              } else {
+                console.log("no trips");
+                res.json(userdetails);
+              }
+            })
           })
         } else {
           res.json({status:"blocked"});

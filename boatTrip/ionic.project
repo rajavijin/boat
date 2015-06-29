@@ -1,0 +1,10 @@
+{
+  "name": "boatTrip",
+  "app_id": "be199989",
+  "proxies": [
+    {
+      "path": "/api",
+      "proxyUrl": "http://52.25.97.15:9000/api"
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+<ion-view cache-view="false" ng-init="getTripData()">
+   <ion-nav-title>{{title}}</ion-nav-title>
+      <ion-nav-buttons side="right">
+      <button class="button button-icon button-clear ion-edit" ng-click="editTrip()"></button>
+    </ion-nav-buttons>
+   <ion-content class="has-header">
+      <ion-refresher pulling-text="Pull to refresh" on-refresh="getTripData()"></ion-refresher>
+<!--       <chart id="ssubjects" config="ssubjectsConfig" ng-if="dashboardStatus != 'empty'"></chart>
+      <chart id="sattendance" config="sattendanceConfig" ng-if="dashboardStatus != 'empty'" class="noclick"></chart> -->
+      <div class="list">
+      <a class="item item-icon-left first" href="#">
+      <i class="icon ion-ios-calendar positive"></i>Startdate<span class="badge badge-positive">{{trip.startdate}}</span></a>
+      <a class="item item-icon-left first" href="#">
+      <i class="icon ion-ios-calendar positive"></i>Enddate<span class="badge badge-positive">{{trip.enddate}}</span></a>
+      <a class="item item-icon-left first" href="#">
+      <i class="icon ion-waterdrop positive"></i>Diesel<span class="badge badge-positive">{{trip.diesel}}</span></a> 
+      <a class="item item-icon-left first" href="#">
+      <i class="icon ion-icecream positive"></i>Ice<span class="badge badge-positive">{{trip.ice}}</span></a>
+      <a class="item item-icon-left first" href="#">
+      <i class="icon ion-ios-world-outline positive"></i>Net<span class="badge badge-positive">{{trip.net}}</span></a> 
+      <a class="item item-icon-left first" href="#">
+      <i class="icon ion-coffee positive"></i>Food<span class="badge badge-positive">{{trip.food}}</span></a> 
+      <a class="item item-icon-left first" href="#" ng-if="trip.extra.length > 0" ng-repeat="extv in trip.extra">
+      <i class="icon ion-ios-grid-view-outline positive"></i>{{extv.name}}<span class="badge badge-positive">{{extv.price}}</span></a>
+      <a class="item item-icon-left first" href="#">
+      <i class="icon ion-social-bitcoin-outline positive"></i>Bata<span class="badge badge-positive">{{trip.bata}}</span></a>      
+      <a class="item item-icon-left first" href="#">
+      <i class="icon ion-social-usd positive"></i>Income<span class="badge badge-positive">{{trip.income}}</span></a> 
+      <a class="item item-icon-left first" href="#">
+      <i class="icon ion-social-bitcoin positive"></i>Total Spending<span class="badge badge-positive">{{trip.totalspending}}</span></a> 
+      <a class="item item-icon-left first" href="#">
+      <i class="icon ion-social-usd-outline positive"></i>Balance<span class="badge badge-positive">{{trip.balance}}</span></a> 
+      <a class="item item-icon-left first" href="#">
+      <i class="icon ion-social-usd positive"></i>Ownerincome<span class="badge badge-positive">{{trip.ownerincome}}</span></a>
+      <a class="item item-icon-left first" href="#">
+      <i class="icon ion-social-usd positive"></i>Workerincome<span class="badge badge-positive">{{trip.workerincome}}</span></a>
+      <a class="item item-icon-left first" href="#" ng-repeat="member in trip.members">
+      <i class="icon ion-person positive"></i>{{member.name}}<span class="badge badge-positive">{{member.total}}</span></a>
+      </div>
+   </ion-content>
+</ion-view>

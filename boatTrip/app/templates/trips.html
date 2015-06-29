@@ -1,0 +1,28 @@
+<ion-view cache-view="false" ng-init="getTrips()" title="All Trips" hide-nav-bar="filterStatus">
+    <div class="bar bar-header item-input-inset header-search bar-positive padding" ng-show="filterStatus">
+  	<ion-search placeholder="Search" filter="query.search"></ion-search>
+  	<div class="buttons buttons-right header-item"><span class="right-buttons">
+	<button class="button button-icon button-clear ion-ios-search" ng-click="filterToggle()"></button>
+    </span></div>
+	</div>
+	<ion-nav-buttons side="right">
+	<button class="button button-icon button-clear ion-ios-search" ng-click="filterToggle()"></button>
+    </ion-nav-buttons>
+   <ion-content class="has-header">
+      <ion-list ng-if="dashboardStatus == 'empty'">
+         <ion-item class="item item-icon-left"><i class="icon ion-ios-list positive"></i>No Trips Added Yet</item>
+      </ion-list>
+   	  <div ng-if="filterStatus" style="height:44px;"></div>
+      <ion-list>
+         <ion-item collection-repeat="trip in trips | filter:query.search.value" class="item item-icon-left positive" href="#/app/tripdashboard/{{trip.id}}">
+            <i class="icon ion-android-boat"></i>
+            <h2>{{trip.name}}</h2>
+         </ion-item>
+      </ion-list>
+      <div class="list" ng-if="allStudentsStatus == false">
+         <a class="item" href="#">
+            <p>No students found</p>
+         </a>
+      </div>
+   </ion-content>
+</ion-view>

@@ -1,8 +1,8 @@
 angular.module('starter.controllers', ['starter.services'])
 
-.controller('AppCtrl', function($scope, $rootScope, $interval, $cordovaSQLite, MyService) {
+.controller('AppCtrl', function($scope, $rootScope, $interval, $ionicAnalytics, $cordovaSQLite, MyService) {
   user = JSON.parse(localStorage.getItem('user')) || user;
-  $scope.username = user.name;
+  $rootScope.currentuser = user;
   $scope.uid = localStorage.getItem('uid') || '';
   if($scope.uid) {
     $scope.authorized = true;
@@ -49,8 +49,9 @@ angular.module('starter.controllers', ['starter.services'])
     }, 1000);
   };*/
   $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){ 
-    console.log("from state",toState.name);
-    if(toState.name == 'app.dashboard') {
+    $ionicAnalytics.track('pages', {page:toState.name, url:toState.url});
+    console.log("PAGE:",toState.url.split("/")[1]);
+    if((toState.name == 'app.dashboard') || (toState.name == 'app.overalldashboard')) {
       $rootScope.filters = true;
     } else {
       $rootScope.filters = false;
@@ -69,87 +70,55 @@ angular.module('starter.controllers', ['starter.services'])
 })
 .controller('DashboardCtrl', function($scope, $rootScope, $state, $cordovaSQLite, MyService) {
   $rootScope.filters = true;
-  $scope.title = "Overall Dashboard";
-  if(localStorage.getItem('filterdata')) {
-    filtersData = JSON.parse(localStorage.getItem('filterdata'));
-  } else {
-    var currentyear = new Date().getFullYear();
-    filtersData.years = [currentyear];
-    filtersData.year = 0;
-    filtersData.months = ['All'];
-    filtersData.month = 0;
-    localStorage.setItem('filtersData', JSON.stringify(filtersData));
-  }
-  $rootScope.filtersData = filtersData;
+  $rootScope.monthfilter = true;
+  $rootScope.page = "dashboard";
+  $scope.title = "Dashboard";
   $rootScope.dashboardFilters = function() {
     console.log("filter dashboard data", $rootScope.filtersData);
-    $scope.getTrips();
+    var fmonth = ("0" + $rootScope.filtersData.month).slice(-2);
+    if(!$rootScope.filtersData.years[$rootScope.filtersData.year][fmonth]) {
+      alert("Please select a month");
+    } else {
+      $scope.getTrips();
+    }
   }
   $scope.getTrips = function() {
-    if($rootScope.filtersData.month == 0) {
-      var startrange = $rootScope.filtersData.years[$rootScope.filtersData.year] +'-01-01';
-      var endrange = $rootScope.filtersData.years[$rootScope.filtersData.year] +'-12-31';
-      $scope.title = $rootScope.filtersData.years[$rootScope.filtersData.year] + " Dashboard";
+    var storedFilters = localStorage.getItem("filtersData") || '';
+    if(storedFilters) $rootScope.filtersData = JSON.parse(storedFilters);
+    console.log("Dash Filters:", $rootScope.filtersData);
+    if(Object.keys($rootScope.filtersData.years).length == 0) {
+      $rootScope.filters = false;
+      $scope.dashboardStatus = "empty";
     } else {
-      var startrange = $rootScope.filtersData.years[$rootScope.filtersData.year] +'-'+MyService.monthIndex($rootScope.filtersData.months[$rootScope.filtersData.month])+'-01';
-      var endrange = $rootScope.filtersData.years[$rootScope.filtersData.year] +'-'+MyService.monthIndex($rootScope.filtersData.months[$rootScope.filtersData.month])+'-31';
-      $scope.title = $rootScope.filtersData.years[$rootScope.filtersData.year] + " "+$rootScope.filtersData.months[$rootScope.filtersData.month]+" Dashboard";    
+      var fmonth = ("0" + $rootScope.filtersData.month).slice(-2);
+      var startrange = $rootScope.filtersData.year +'-'+fmonth+'-01';
+      var endrange = $rootScope.filtersData.year +'-'+fmonth+'-31';
+      $scope.title = $rootScope.filtersData.year + " "+$rootScope.filtersData.years[$rootScope.filtersData.year][fmonth]+" Dashboard";    
+      var query = 'SELECT * from trips where startdate between "'+startrange+'" AND "'+endrange+'" ORDER BY startdate';
+      console.log("query", query);
+      $cordovaSQLite.execute(db, query).then(function(res) {
+        totalrecords = res.rows.length;
+        if(totalrecords > 0) {
+          $scope.dashboardStatus = "not empty";
+          var incomeLabels = [];
+          var income = [];
+          var spending = [];
+          for (var i = 0; i < res.rows.length; i++) {
+            var row = res.rows[i];
+            incomeLabels.push(row.name);
+            income.push({name:row.name, y:row.income,id:row.id});
+            spending.push({name:row.name, y:row.totalspending,id:row.id});
+            console.log("rootscope filters", $rootScope.filtersData);
+            console.log("row", row);
+          };
+          processVal(incomeLabels, income, spending);
+        } else {$scope.dashboardStatus = "empty";}
+      }, function(err) {
+
+      }).finally(function() {$scope.$broadcast('scroll.refreshComplete');});
     }
-    var query = 'SELECT * from trips where startdate between "'+startrange+'" AND "'+endrange+'" ORDER BY startdate';
-    console.log("query", query);
-    $cordovaSQLite.execute(db, query).then(function(res) {
-      totalrecords = res.rows.length;
-      if(totalrecords > 0) {
-        $scope.dashboardStatus = "not empty";
-        var trips = [];
-        for (var i = 0; i < res.rows.length; i++) {
-          var row = res.rows[i];
-          var start = new Date(row.startdate);
-          console.log("month", MyService.months(start.getMonth()));
-          if($rootScope.filtersData.months.indexOf(MyService.months(start.getMonth())) == -1) {
-           $rootScope.filtersData.months.push(MyService.months(start.getMonth())); 
-           //$rootScope.filtersData.month = $rootScope.filtersData.months.indexOf(MyService.months(start.getMonth()));
-          }
-          if($rootScope.filtersData.years.indexOf(start.getFullYear()) == -1) {
-           $rootScope.filtersData.years.push(start.getFullYear());
-           $rootScope.filtersData.year = $rootScope.filtersData.years.indexOf(start.getFullYear());
-          }
-          console.log("rootscope filters", $rootScope.filtersData);
-          console.log("row", row);
-          trips.push(row);
-        };
-        console.log("All Trips", trips);
-        processVal(trips);
-      } else {$scope.dashboardStatus = "empty";}
-    }, function(err) {
-
-    }).finally(function() {$scope.$broadcast('scroll.refreshComplete');});
-
-/*    var params = {};
-    params.boatid = user.boatid;
-    if(MyService.online()) {
-      MyService.getTrips(params).then(function(trips) {
-        console.log("Trips", trips);
-        if(trips) {
-          $scope.dashboardStatus = true;
-          processVal(trips);
-        } else {
-          $scope.dashboardStatus = false;
-        }
-      })
-    } else {
-
-    }*/
   }
-  var processVal = function(trips) {
-    var incomeLabels = [];
-    var income = [];
-    var spending = [];
-    for (var i = 0; i < trips.length; i++) {
-      incomeLabels.push(trips[i].name);
-      income.push({name:trips[i].name, y:trips[i].income,id:trips[i].id});
-      spending.push({name:trips[i].name, y:trips[i].totalspending,id:trips[i].id});
-    }
+  var processVal = function(incomeLabels, income, spending) {
     $scope.incomeConfig = {
       chart: {renderTo: 'income',type: 'column', options3d: {enabled: true,alpha: 10,beta: 20,depth: 50}},
       title: {text:"Income"},plotOptions: {series:{cursor:'pointer',events:{click:function(event){$state.go("app.tripdashboard", {id:event.point.id});}}},column: {depth: 25,showInLegend: false, dataLabels: {enabled: true,format: '{point.y}'}, events: {legendItemClick: function () {return false;}}}},
@@ -163,6 +132,93 @@ angular.module('starter.controllers', ['starter.services'])
       xAxis: {categories: incomeLabels},
       yAxis: {title: {text: null}},
       series: [{name: 'Spending',data: spending}]
+    }
+  }
+})
+.controller('OverallDashboardCtrl', function($scope, $rootScope, $state, $cordovaSQLite, MyService) {
+  $rootScope.filters = true;
+  $rootScope.monthfilter = false;
+  $rootScope.page = "overalldashboard";
+  $scope.title = "Overall Dashboard";
+/*  if(user.filters) {
+    $rootScope.filtersData = user.filters;
+  } else {
+    $rootScope.filters = false;
+  }*/
+  $rootScope.overalldashboardFilters = function() {
+    console.log("overall dashboard data", $rootScope.filtersData);
+     $scope.getTrips();
+  }
+  $scope.getTrips = function() {
+    var storedFilters = localStorage.getItem("filtersData") || '';
+    if(storedFilters) $rootScope.filtersData = JSON.parse(storedFilters);
+    if(Object.keys($rootScope.filtersData.years).length == 0) {
+      $scope.dashboardStatus = "empty";
+      $rootScope.filters = false;
+    } else {
+      var startrange = $rootScope.filtersData.year +'-01-01';
+      var endrange = $rootScope.filtersData.year +'-12-31';
+      $scope.title = $rootScope.filtersData.year +" Dashboard";    
+      var query = 'SELECT * from trips where startdate between "'+startrange+'" AND "'+endrange+'" ORDER BY startdate';
+      console.log("query", query);
+      $cordovaSQLite.execute(db, query).then(function(res) {
+        totalrecords = res.rows.length;
+        if(totalrecords > 0) {
+          $scope.dashboardStatus = "not empty";
+          var monthly = {};
+          var all = {income:{total:0,id:1},spending:{total:0,id:2}, members:{}};
+          for (var i = 0; i < res.rows.length; i++) {
+            var month = MyService.months(new Date(res.rows[i].startdate).getMonth());
+            if(!monthly[month]) {
+              monthly[month] = {income: res.rows[i].income,spending:res.rows[i].totalspending} 
+            } else {
+              monthly[month].income = monthly[month].income + res.rows[i].income;
+              monthly[month].spending = monthly[month].spending + res.rows[i].totalspending;
+            }
+            all.income.total = all.income.total + res.rows[i].income;
+            all.spending.total = all.spending.total + res.rows[i].totalspending;
+            var members = JSON.parse(res.rows[i].members);
+            for (var m = 0; m < members.length; m++) {
+              console.log("member total", members[m].total);
+              if(!all.members[members[m].name]) {
+                all.members[members[m].name] = {total:parseInt(members[m].total)};
+              } else {
+                all.members[members[m].name].total = all.members[members[m].name].total + parseInt(members[m].total);
+              }
+              console.log("all members", all.members[members[m].name]);
+            };
+          };
+          processVal(monthly, all);
+        } else {$scope.dashboardStatus = "empty";}
+      }, function(err) {
+
+      }).finally(function() {$scope.$broadcast('scroll.refreshComplete');});
+    }
+  }
+  var processVal = function(monthly, all) {
+    console.log("all", all);
+    var allmonths = [];
+    var allincome = [];
+    var allspending = [];
+    for(var mrec in monthly) {
+      allmonths.push(mrec);
+      allincome.push(monthly[mrec].income);
+      allspending.push(monthly[mrec].spending);
+    }
+    $scope.all = all;
+    $scope.allincomeConfig = {
+      chart: {renderTo: 'allincome',type: 'line', options3d: {enabled: true,alpha: 10,beta: 20,depth: 50}},
+      title: {text:"Income"},plotOptions: {line: {depth: 25,showInLegend: false, dataLabels: {enabled: true,format: '{point.y}'}, events: {legendItemClick: function () {return false;}}}},
+      xAxis: {categories: allmonths},
+      yAxis: {title: {text: null}},
+      series: [{name: 'Income',data: allincome}]
+    }
+    $scope.allspendingConfig = {
+      chart: {renderTo: 'allspending',type: 'line', options3d: {enabled: true,alpha: 10,beta: 20,depth: 50}},
+      title: {text:"Spending"},plotOptions: {line: {depth: 25,showInLegend: false, dataLabels: {enabled: true,format: '{point.y}'}, events: {legendItemClick: function () {return false;}}}},
+      xAxis: {categories: allmonths},
+      yAxis: {title: {text: null}},
+      series: [{name: 'Spending',data: allspending}]
     }
   }
 })
@@ -278,6 +334,7 @@ angular.module('starter.controllers', ['starter.services'])
   });*/
   $scope.submit = function() {
     var tripdetails = $scope.addtrip;
+    console.log("Got from form", $scope.addtrip);
     var err = '';
     if(!tripdetails.income) err += "Please enter income and ";
     if(!tripdetails.allmembers) err += "Please Select members and "
@@ -291,8 +348,14 @@ angular.module('starter.controllers', ['starter.services'])
       if(!tripdetails.food) tripdetails.food = 0;
       if(!tripdetails.bataperday) tripdetails.bataperday = 0;
       var fstartdate = moment(tripdetails.startdate).format("YYYY-MM-DD");
+      var filtersDate = fstartdate.split("-");
+      $rootScope.filtersData.year = filtersDate[0];
+      $rootScope.filtersData.month = filtersDate[1]; 
+      if(!$rootScope.filtersData.years[filtersDate[0]]) $rootScope.filtersData.years[filtersDate[0]] = {};
+      $rootScope.filtersData.years[filtersDate[0]][filtersDate[1]] = moment(tripdetails.startdate).format("MMM");
+      localStorage.setItem("filtersData", JSON.stringify($rootScope.filtersData));
       var fenddate = moment(tripdetails.enddate).format("YYYY-MM-DD");
-      var totalDays = moment(tripdetails.enddate).diff(moment(tripdetails.startdate))/(86400*1000);
+      var totalDays = parseInt(moment(tripdetails.enddate).diff(moment(tripdetails.startdate))/(86400*1000));
       tripdetails.members = [];
       var totalmembers = 0;
       var totalpartitions = 0;
@@ -312,11 +375,13 @@ angular.module('starter.controllers', ['starter.services'])
           extra += tripdetails.extra[i].price;
         }
       }
+      if(extra == 0) tripdetails.extra = [];
       tripdetails.bata = totalmembers * tripdetails.bataperday * totalDays;
-      tripdetails.totalspending = tripdetails.diesel + tripdetails.ice + tripdetails.net + tripdetails.food + extra + tripdetails.bata;
-      tripdetails.balance = tripdetails.income - tripdetails.totalspending;
-      tripdetails.ownerincome = tripdetails.balance * (tripdetails.ownerp/100);
-      tripdetails.workerincome = tripdetails.balance * (tripdetails.workerp/100);
+      console.log("tripdetails", tripdetails);
+      tripdetails.totalspending = (tripdetails.diesel + tripdetails.ice + tripdetails.net + tripdetails.food + extra + tripdetails.bata).toFixed(2);
+      tripdetails.balance = (tripdetails.income - tripdetails.totalspending).toFixed(2);
+      tripdetails.ownerincome = (tripdetails.balance * (tripdetails.ownerp/100)).toFixed(2);
+      tripdetails.workerincome = (tripdetails.balance * (tripdetails.workerp/100)).toFixed(2);
       for (var i = 0; i < user.members.length; i++) {
         if(tripdetails.allmembers[user.members[i]._id]) {
           var memberinfo = user.members[i];
@@ -483,8 +548,15 @@ angular.module('starter.controllers', ['starter.services'])
     $state.go('app.edituser',{id:$stateParams.id}, {reload:true});
   }
   $scope.getUserData = function() {
-    $scope.member = user.members[$stateParams.id];
-    $scope.title = user.members[$stateParams.id].name;
+    var member = {};
+    console.log("stateParams", $stateParams);
+    for (var i = 0; i < user.members.length; i++) {
+      if($stateParams.id == user.members[i].email) {
+        member = user.members[i];
+      }
+    };
+    console.log("member", member);
+    $scope.member = member;
   }
 })
 .controller('ProfileCtrl', function($scope, MyService) {
@@ -493,34 +565,76 @@ angular.module('starter.controllers', ['starter.services'])
   }
 })
 
-.controller('HomeCtrl',function($scope, $state, MyService){
+.controller('HomeCtrl',function($scope, $rootScope, $state, $ionicUser, $ionicAnalytics, $ionicLoading, $cordovaSQLite, $cordovaDevice, MyService){
+  $scope.user = {
+    email: 'demo',
+    password:'demo'
+  }
   $scope.user = {
     email: '9988776655',
-    password:'moadzpvi'
+    password:'pk5d0a4i'
   }
   $scope.login = function() { 
     if (($scope.user.email == null) || ($scope.user.password == null)) {
       alert('Please fill the fields');
     }
     else {
+      $ionicLoading.show({template:'<ion-spinner icon="lines" class="spinner-calm"></ion-spinner>'});
       MyService.login($scope.user).then(function(user) {
-        if(user) {
+        var iuser = {
+          user_id: user._id,
+          name: user.email,
+          role: user.role,
+          username: user.name,
+        }
+        // Identify your user with the Ionic User Service
+        $ionicUser.identify(iuser).then(function(){
+          console.log('Identified user ' + iuser.name + '\n ID ' + iuser.user_id);
+        })
+        $ionicAnalytics.register();
+        if(window.cordova) $ionicAnalytics.track('device', $cordovaDevice.getDevice());
+        $rootScope.filtersData = user.filters;
+        var localupdated = localStorage.getItem("localupdated") || false;
+        if((user.email == 'demo') && (!localupdated)) {
+          MyService.getTrips({boatid:user.boatid}).then(function(trips) {
+            for (var st = 0; st < trips.length; st++) {
+              if(!trips[st].diesel) trips[st].diesel = 0;
+              if(!trips[st].ice) trips[st].ice = 0;
+              if(!trips[st].net) trips[st].net = 0;
+              if(!trips[st].food) trips[st].food = 0;
+              if(!trips[st].bataperday) trips[st].bataperday = 0;
+              var fstartdate = moment(trips[st].startdate).format("YYYY-MM-DD");
+              var fenddate = moment(trips[st].enddate).format("YYYY-MM-DD");
+              var fdate = fstartdate.split("-");
+              if(!user.filters.years[fdate[0]]) user.filters.years[fdate[0]] = {};
+              user.filters.years[fdate[0]][fdate[1]] = moment(trips[st].startdate).format("MMM");
+              user.filters.year = fdate[0];
+              user.filters.month = fdate[1];
+              var query = "INSERT into trips (_id,name,boatname,boatid,startdate,enddate,income,diesel,ice,net,food,bata,balance,ownerincome,workerincome,totalspending,ownerp,workerp,bataperday,extra,members) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+              $cordovaSQLite.execute(db, query, [trips[st]._id,trips[st].name,trips[st].boatname,trips[st].boatid,fstartdate,fenddate,trips[st].income,trips[st].diesel,trips[st].ice,trips[st].net,trips[st].food,trips[st].bata,trips[st].balance,trips[st].ownerincome,trips[st].workerincome,trips[st].totalspending, trips[st].ownerp, trips[st].workerp, trips[st].bataperday, JSON.stringify(trips[st].extra), JSON.stringify(trips[st].members)]).then(function(res) {
+                console.log("insertId: " + res.insertId);
+                if(res.insertId == trips.length) {
+
+                }
+              })
+              if(st == (trips.length - 1)) {
+                localStorage.setItem("localupdated", true);
+                localStorage.setItem("user", JSON.stringify(user));
+                $ionicLoading.hide();
+                $state.go("app.dashboard", {},  {'reload': true});
+              }
+            }
+          });
+        } else {
+          localStorage.setItem("user", JSON.stringify(user));
+          $ionicLoading.hide();
           $state.go("app.dashboard", {},  {'reload': true});
         }
       }, function(err) {
         console.log("user login error", err);
-      })
-      /*var loggedinuser = localStorage.getItem("loggedinuser") || {};
-      if(loggedinuser) {
-        var luser = JSON.parse(loggedinuser);
-        if((luser.email == $scope.user.email) && (luser.password == $scope.user.password)) {
-          localStorage.setItem('uid', user._id);
-          $state.go("app.dashboard", {},  {'reload': true});
-        }
-      } else {
-      }*/
+        $ionicLoading.hide();
+      });
     }
-    console.log("user details", $scope.user);
   }
 })
 .controller('LogoutCtrl', function($scope, $http, $ionicHistory, $state) {
@@ -529,5 +643,6 @@ angular.module('starter.controllers', ['starter.services'])
     $ionicHistory.clearHistory();
     console.log("Logging out:");
     localStorage.removeItem('uid');
+    //localStorage.removeItem('filtersData');
     $state.go("home", {}, {reload: true});
 });
