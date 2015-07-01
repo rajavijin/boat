@@ -86,9 +86,10 @@ User.findOne({
     email: req.body.email
   }, '-pepper', function(err, user) { // don't ever give out the password or salt
     if (err) return next(err);
+    if (!user) return res.json(401);
     if(user.authenticate(req.body.password)) {
-      console.log("authenticated", user);
       if (!user) return res.json(401);
+      console.log("authenticated", user);
       User.find({boatid:user.boatid,role:{$ne:'owner'}}, 'name email role salarylevel mobile remainingbalance', function(err, members) {
         if(user.active) {
           var userdetails = { 

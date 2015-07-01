@@ -52,16 +52,24 @@
     <span class="input-label col-offset-10">Bata/Day</span>
     <input type="number" ng-model="addtrip.bataperday">
   </label>
-  <div class="item item-divider item-input item-icon-left item-icon-right">
+    <label class="item item-divider item-icon-left item-icon-right">
+    <i class="icon ion-navicon-round positive"></i>
+    <span class="input-label">Extra</span>
+    <button ng-click="createExtra()" class="button button-icon icon-right icon ion-ios-plus-outline positive"></button>
+    
+  </label>   
+<!--   <div class="item item-divider item-input item-icon-left item-button-right">
     <i class="icon ion-navicon-round positive"></i>
     <span class="input-label col col-80 col-offset-10">Extra</span>
-    <span ng-click="createExtra()" class="col col-10"><i class="icon ion-ios-plus-outline positive"></i></span>
-  </div>
+    <button ng-click="createExtra()" class="button button-positive">
+      <i class="icon ion-ios-plus-outline"></i>
+    </button>
+  </div> -->
   <div on-swipe-left="removeExtra(k)" class="item item-input item-icon-right" ng-repeat="(k,v) in addtrip.extra">
   <div class="row">
     <input class="col col-50" type="text" ng-model="addtrip.extra[k].name" placeholder="Add extra">
-    <input class="col col-40" type="number" ng-model="addtrip.extra[k].price" placeholder="rs">
-    <span ng-click="removeExtra(k)" class="col col-10"><i class="icon ion-ios-close-outline positive"></i></span>
+    <input class="col col-33" type="number" ng-model="addtrip.extra[k].price" placeholder="rs">
+    <button ng-click="removeExtra(k)" class="col col-20 button button-icon icon icon-right ion-ios-close-outline positive"></button>
   </div>
   </div>
   <label class="item item-divider item-icon-left">

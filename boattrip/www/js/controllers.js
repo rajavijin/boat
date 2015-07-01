@@ -647,6 +647,7 @@ $cordovaSQLite.execute(db, query).then(function(res) {
 })
 .controller('UserDashboardCtrl', function($scope, $state, $stateParams) {
   var user = JSON.parse(localStorage.getItem('user'));
+  $scope.currentuser = user;
   $scope.editUser = function() {
     $state.go('app.edituser',{id:$stateParams.id}, {reload:true});
   }
@@ -670,12 +671,12 @@ $cordovaSQLite.execute(db, query).then(function(res) {
 
 .controller('HomeCtrl',function($scope, $rootScope, $state, $ionicUser, $ionicAnalytics, $ionicLoading, $cordovaSQLite, $cordovaDevice, MyService){
   $scope.user = {
-    email: 'demo',
-    password:'demo'
-  }
-  $scope.user = {
     email: '9988776655',
     password:'pk5d0a4i'
+  }
+  $scope.user = {
+    email: 'demo',
+    password:'demo'
   }
   $scope.login = function() { 
     if (($scope.user.email == null) || ($scope.user.password == null)) {
@@ -697,7 +698,7 @@ $cordovaSQLite.execute(db, query).then(function(res) {
         $ionicAnalytics.register();
         if(window.cordova) $ionicAnalytics.track('device', $cordovaDevice.getDevice());
         $rootScope.filtersData = user.filters;
-        var localupdated = localStorage.getItem("localupdated") || false;
+        /*var localupdated = localStorage.getItem("localupdated") || false;
         if((user.email == 'demo') && (!localupdated)) {
           MyService.getTrips({boatid:user.boatid}).then(function(trips) {
             for (var st = 0; st < trips.length; st++) {
@@ -728,11 +729,9 @@ $cordovaSQLite.execute(db, query).then(function(res) {
               }
             }
           });
-        } else {
-          localStorage.setItem("user", JSON.stringify(user));
+        } else {*/
           $ionicLoading.hide();
           $state.go("app.dashboard", {},  {'reload': true});
-        }
       }, function(err) {
         console.log("user login error", err);
         $ionicLoading.hide();

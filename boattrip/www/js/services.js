@@ -1,7 +1,7 @@
 angular.module('starter.services', [])
 .factory('MyService', function($rootScope, $ionicLoading, $ionicPopup, $state, $http, $q) {
-  var baseUrl = 'http://192.168.1.3:8100/api';
   var baseUrl = 'http://localhost:8100/api';
+  var baseUrl = 'http://192.168.1.3:8100/api';
   var loginEndpoint       = baseUrl +'/users/verify';
   var logoutEndpoint       = baseUrl +'/users/';
   var token = localStorage.getItem('token') || '';
@@ -16,17 +16,19 @@ angular.module('starter.services', [])
       .post(loginEndpoint, userData)
       .success(function (data, status, headers, config) {
         console.log("status:", status);
+        var err = '';
         if(data.status == "password not matching") {
-          $ionicLoading.hide();
-          $ionicPopup.alert({
-              title: 'Login failed!',
-              template: 'Password not matching'
-          });
+          err = "Password not matching";
+        } else if(data == 401) {
+          err = "Login Failed, Please check your credentials";
         } else if (data.status == "blocked") {
+          err = "Your account is blocked, Please contact admin";
+        }
+        if(err) {
           $ionicLoading.hide();
           $ionicPopup.alert({
               title: 'Login failed!',
-              template: 'Your account is blocked, Please contact admin'
+              template: err
           });
         } else {
           $http.defaults.headers.common.Authorization = "Bearer "+data.token;

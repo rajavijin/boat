@@ -1,7 +1,7 @@
 <ion-view cache-view="false" ng-init="getUserData()">
    <ion-nav-title>{{member.name}}</ion-nav-title>
       <ion-nav-buttons side="right">
-      <button class="button button-icon button-clear ion-edit" ng-click="editUser()"></button>
+      <button ng-if="currentuser.email !='demo'" class="button button-icon button-clear ion-edit" ng-click="editUser()"></button>
     </ion-nav-buttons>
    <ion-content class="has-header">
       <ion-refresher pulling-text="Pull to refresh" on-refresh="getTripData()"></ion-refresher>
