@@ -2,49 +2,60 @@
 <ion-nav-title>{{title}}</ion-nav-title>
 <ion-content>
 <div class="list">
-  <label class="item item-input">
-    <span class="input-label">StartDate</span>
+  <label class="item item-input item-icon-left">
+    <i class="icon ion-ios-calendar-outline positive"></i>
+    <span class="input-label col-offset-10">StartDate</span>
     <input type="date" ng-model="addtrip.startdate">
   </label>
-  <label class="item item-input">
-    <span class="input-label">EndDate</span>
+  <label class="item item-input item-icon-left">
+    <i class="icon ion-ios-calendar-outline positive"></i>
+    <span class="input-label col-offset-10">EndDate</span>
     <input type="date" ng-model="addtrip.enddate">
   </label>
-  <label class="item item-input">
-    <span class="input-label">Income</span>
+  <label class="item item-input item-icon-left">
+    <i class="icon ion-social-usd  positive"></i>
+    <span class="input-label col-offset-10">Income</span>
     <input type="number" ng-model="addtrip.income">
   </label>
-  <label class="item item-input">
-    <span class="input-label">Owner%</span>
+  <label class="item item-input item-icon-left">
+    <i class="icon ion-ios-pie-outline positive"></i>
+    <span class="input-label col-offset-10">Owner%</span>
     <input type="number" ng-model="addtrip.ownerp">
   </label>
-  <label class="item item-input">
-    <span class="input-label">Worker%</span>
+  <label class="item item-input item-icon-left">
+    <i class="icon ion-ios-pie-outline positive"></i>
+    <span class="input-label col-offset-10">Worker%</span>
     <input type="number" ng-model="addtrip.workerp">
   </label>
-  <label class="item item-input">
-    <span class="input-label">Diesel</span>
+  <label class="item item-input item-icon-left">
+    <i class="icon ion-waterdrop positive"></i>
+    <span class="input-label col-offset-10">Diesel</span>
     <input type="number" ng-model="addtrip.diesel">
   </label>
-  <label class="item item-input">
-    <span class="input-label">Ice</span>
+  <label class="item item-input item-icon-left">
+    <i class="icon ion-icecream positive"></i>
+    <span class="input-label col-offset-10">Ice</span>
     <input type="number" ng-model="addtrip.ice">
   </label>
-  <label class="item item-input">
-    <span class="input-label">net</span>
+  <label class="item item-input item-icon-left">
+    <i class="icon ion-ios-grid-view-outline positive"></i>
+    <span class="input-label col-offset-10">net</span>
     <input type="number" ng-model="addtrip.net">
   </label>
-   <label class="item item-input">
-    <span class="input-label">Food</span>
+   <label class="item item-input item-icon-left">
+    <i class="icon ion-coffee positive"></i>
+    <span class="input-label col-offset-10">Food</span>
     <input type="number" ng-model="addtrip.food">
   </label>
-  <label class="item item-input">
-    <span class="input-label">Bata/Day</span>
+  <label class="item item-input item-icon-left">
+    <i class="icon ion-social-bitcoin-outline positive"></i>
+    <span class="input-label col-offset-10">Bata/Day</span>
     <input type="number" ng-model="addtrip.bataperday">
   </label>
-  <div class="item item-divider item-input item-icon-right">
-    <span class="input-label">Extra</span>
-    <span ng-click="createExtra()"><i class="icon ion-ios-plus-outline positive"></i></span>
+  <div class="item item-divider item-input item-icon-left item-icon-right">
+    <i class="icon ion-navicon-round positive"></i>
+    <span class="input-label col col-80 col-offset-10">Extra</span>
+    <span ng-click="createExtra()" class="col col-10"><i class="icon ion-ios-plus-outline positive"></i></span>
   </div>
   <div on-swipe-left="removeExtra(k)" class="item item-input item-icon-right" ng-repeat="(k,v) in addtrip.extra">
   <div class="row">
@@ -53,11 +64,12 @@
     <span ng-click="removeExtra(k)" class="col col-10"><i class="icon ion-ios-close-outline positive"></i></span>
   </div>
   </div>
-  <label class="item item-divider">
+  <label class="item item-divider item-icon-left">
+    <i class="icon ion-ios-people positive"></i>
     <span class="input-label">Members</span>
   </label>   
-  <div class="item item-toggle" ng-repeat="(k, member) in members">
-     {{member.name}}
+  <div class="item item-toggle item-icon-left" ng-repeat="(k, member) in members">
+     <i class="icon ion-person positive"></i>{{member.name}}
      <label class="toggle toggle-positive">
        <input type="checkbox" ng-model="addtrip.allmembers[member._id]">
        <div class="track">
