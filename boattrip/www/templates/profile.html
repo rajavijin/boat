@@ -1,0 +1,9 @@
+<ion-view title="Profile" ng-init="getProfile()">
+  <ion-content>
+    <div class="list">
+    	<a class="item item-icon-left"><i class="icon ion-person positive"></i> {{user.name}}</a>
+    	<a class="item item-icon-left"><i class="icon ion-android-boat positive"></i> {{user.boatname}}</a>
+    	<a class="item item-icon-left" ng-if="currentuser.email != 'demo'"><i class="icon ion-ios-telephone positive"></i> {{user.email}}</a>
+    </div>
+  </ion-content>
+</ion-view>

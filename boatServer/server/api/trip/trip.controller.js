@@ -13,6 +13,7 @@ exports.index = function(req, res) {
 
 // Get a single trip
 exports.show = function(req, res) {
+  console.log("params", req.params);
   Trip.findById(req.params.id, function (err, trip) {
     if(err) { return handleError(res, err); }
     if(!trip) { return res.send(404); }
@@ -29,6 +30,14 @@ exports.trips = function(req, res) {
   });
 };
 
+// Get trips
+exports.alltrips = function(req, res) {
+  Trip.find({boatid: req.params.boatid,startdate:{$gte:req.params.start,$lte:req.params.end}}, null, {sort:{startdate: 1}}, function (err, trip) {
+    if(err) { return handleError(res, err); }
+    if(!trip) { return res.send(404); }
+    return res.json(trip);
+  });
+};
 // Creates a new trip in the DB.
 exports.create = function(req, res) {
   console.log("requested", req.body);
@@ -46,6 +55,9 @@ exports.update = function(req, res) {
   Trip.findById(req.params.id, function (err, trip) {
     if (err) { return handleError(res, err); }
     if(!trip) { return res.send(404); }
+    console.log("requested", req.body);
+    trip.members = [];
+    trip.extra = [];
     var updated = _.merge(trip, req.body);
     updated.save(function (err) {
       if (err) { return handleError(res, err); }

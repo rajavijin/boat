@@ -9,8 +9,9 @@ var TripSchema = new Schema({
   boatid: String,
   startdate: Date,
   enddate: Date,
+  tripdate: Date,
   income: Number,
-  petrol: Number,
+  diesel: Number,
   ice: Number,
   net: Number,
   food: Number,
@@ -24,7 +25,7 @@ var TripSchema = new Schema({
   ownerp: Number,
   workerp: Number,
   bataperday: Number,
-  created: Date,
+  created: {type: Date, default: new Date()},
   active: Boolean
 });
 

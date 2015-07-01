@@ -4,7 +4,7 @@
   "proxies": [
     {
       "path": "/api",
-      "proxyUrl": "http://52.25.97.15:9000/api"
+      "proxyUrl": "http://10.42.0.85:9000/api"
     }
   ]
 }
