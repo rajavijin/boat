@@ -259,6 +259,7 @@ angular.module('starter.controllers', ['starter.services'])
   addtrip.ownerp = user.ownerpercentage;
   addtrip.workerp = user.workerpercentage;
   addtrip.bataperday = user.bataperday;
+  addtrip.debttaken = user.debt;
   addtrip.startdate = new Date();
   addtrip.enddate = new Date();
   addtrip.extra = [{name:'',price:''}];
@@ -331,6 +332,22 @@ angular.module('starter.controllers', ['starter.services'])
       tripdetails.extratotal = extra;
       tripdetails.totalspending = tripdetails.diesel + tripdetails.ice + tripdetails.net + tripdetails.food + extra + tripdetails.bata;
       tripdetails.balance = parseInt((tripdetails.income - tripdetails.totalspending).toFixed(2));
+
+      if(tripdetails.balance < 0) {
+        if(tripdetails.debttaken == 0) {
+          tripdetails.debt = -(tripdetails.balance);
+        } else {
+          tripdetails.debt = tripdetails.debttaken + (-(tripdetails.balance));
+        }
+      } else {
+        if(tripdetails.debttaken > 0) {
+          tripdetails.balance = tripdetails.balance - tripdetails.debttaken;
+          tripdetails.debt = user.debt - tripdetails.debttaken;
+        }
+      }
+      user.debt = tripdetails.debt;
+      localStorage.setItem("user", JSON.stringify(user));
+
       tripdetails.ownerincome = parseInt((tripdetails.balance * (tripdetails.ownerp/100)).toFixed(2));
       tripdetails.workerincome = parseInt((tripdetails.balance * (tripdetails.workerp/100)).toFixed(2));
       for (var mi = 0; mi < user.members.length; mi++) {
@@ -347,12 +364,10 @@ angular.module('starter.controllers', ['starter.services'])
           tripdetails.members.push(memberinfo);
         }
       };
-      MyService.addTrip(tripdetails).then(function(tripval) {
-        if(tripdetails.remainingbalance) {
 
-        } else {
-          $state.go('app.tripdashboard', {id:tripval._id}, {reload:true});
-        }
+      console.log("TRIP DETAILS:", tripdetails);
+      MyService.addTrip(tripdetails).then(function(tripval) {
+        $state.go('app.tripdashboard', {id:tripval._id}, {reload:true});
       })
     }
   }
@@ -366,7 +381,7 @@ angular.module('starter.controllers', ['starter.services'])
   $scope.removeExtra = function(index) {
     $scope.addtrip.extra.splice(index, 1);
   }
-
+  var lastDebt = 0;
   if(MyService.online()) {
     $ionicLoading.show({template:'<ion-spinner icon="lines" class="spinner-calm"></ion-spinner>'});
     MyService.getTrip({boatid:user.boatid,id:$stateParams.id}).then(function(trip) {
@@ -376,6 +391,7 @@ angular.module('starter.controllers', ['starter.services'])
       }
       trip.startdate = new Date(trip.startdate);
       trip.enddate = new Date(trip.enddate);
+      lastDebt = trip.debttaken;
       $scope.addtrip = trip;
       $scope.title = "Edit "+ trip.name;
     },function(err) {
@@ -444,6 +460,26 @@ angular.module('starter.controllers', ['starter.services'])
       tripdetails.extratotal = extra;
       tripdetails.totalspending = tripdetails.diesel + tripdetails.ice + tripdetails.net + tripdetails.food + extra + tripdetails.bata;
       tripdetails.balance = parseInt((tripdetails.income - tripdetails.totalspending).toFixed(2));
+      console.log("Edit user", user);
+      if(tripdetails.balance < 0) {
+        if(tripdetails.debttaken == 0) {
+          tripdetails.debt = -(tripdetails.balance);
+        } else {
+          tripdetails.debt = tripdetails.debttaken + (-(tripdetails.balance));
+        }
+      } else {
+        if(tripdetails.debttaken > 0) {
+          tripdetails.balance = tripdetails.balance - tripdetails.debttaken;
+          if(user.debt == 0) {
+            tripdetails.debt = lastDebt - tripdetails.debttaken;
+          } else {
+            tripdetails.debt = user.debt - tripdetails.debttaken;
+          }
+        }
+      }
+      user.debt = tripdetails.debt;
+      localStorage.setItem("user", JSON.stringify(user));
+
       tripdetails.ownerincome = parseInt((tripdetails.balance * (tripdetails.ownerp/100)).toFixed(2));
       tripdetails.workerincome = parseInt((tripdetails.balance * (tripdetails.workerp/100)).toFixed(2));
       var editedmembers = [];
@@ -461,6 +497,7 @@ angular.module('starter.controllers', ['starter.services'])
         }
       };
       tripdetails.members = editedmembers;
+      console.log("Edit Trip details", tripdetails);
       MyService.updateTrip(tripdetails).then(function(updatedTrip) {
         if(updatedTrip) {
           $state.go('app.tripdashboard', {id:updatedTrip._id}, {reload:true});
@@ -608,8 +645,8 @@ angular.module('starter.controllers', ['starter.services'])
     password:'demo'
   }
   $scope.user = {
-    email: '9988776333',
-    password:'zsuzyqfr'
+    email: '9988776655',
+    password:'i1u7hkt9'
   }
   $scope.login = function() { 
     if (($scope.user.email == null) || ($scope.user.password == null)) {

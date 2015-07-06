@@ -25,6 +25,7 @@ var TripSchema = new Schema({
   ownerp: Number,
   workerp: Number,
   bataperday: Number,
+  debttaken: Number,
   uuid: {type: String, default: "default"},
   created: {type: Date, default: new Date()},
   active: Boolean

@@ -11,6 +11,7 @@ var BoatSchema = new Schema({
   workerpercentage: Number,
   bataperday: Number,
   active: Boolean,
+  debt: {type: Number, default: 0},
   created: Date
 });
 

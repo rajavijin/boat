@@ -128,6 +128,7 @@ User.findOne({
             userdetails.ownerpercentage = boatDetails.ownerpercentage;
             userdetails.workerpercentage = boatDetails.workerpercentage;
             userdetails.bataperday = boatDetails.bataperday;
+            userdetails.debt = boatDetails.debt;
             var months = [
               "Jan", "Feb", "Mar",
               "Apr", "May", "Jun", "Jul",

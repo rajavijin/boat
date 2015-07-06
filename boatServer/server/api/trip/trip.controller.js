@@ -2,7 +2,7 @@
 
 var _ = require('lodash');
 var Trip = require('./trip.model');
-
+var Boat = require('../boat/boat.model');
 // Get list of trips
 exports.index = function(req, res) {
   Trip.find(function (err, trips) {
@@ -51,10 +51,19 @@ exports.alltrips = function(req, res) {
 exports.create = function(req, res) {
   console.log("requested", req.body);
   Trip.create(req.body, function(err, trip) {
-    console.log("Trip", trip);
-    console.log("Trip add error:", err);
     if(err) { return handleError(res, err); }
-    return res.json(201, trip);
+    if((req.body.debt > 0) || (req.body.debttaken > 0)) {
+      Boat.findById(req.body.boatid, function (boaterr, boat) {
+        if (boaterr) { return handleError(res, boaterr); }
+        if(!boat) { return res.send(404); }
+        var updateVal = {debt:req.body.debt};
+        var updated = _.merge(boat, updateVal);
+        updated.save(function (boaterr) {
+          if (boaterr) { return handleError(res, boaterr); }
+          return res.json(200, trip);
+        });
+      });
+    }
   });
 };
 
@@ -70,7 +79,20 @@ exports.update = function(req, res) {
     var updated = _.merge(trip, req.body);
     updated.save(function (err) {
       if (err) { return handleError(res, err); }
-      return res.json(200, trip);
+      if((req.body.debt > 0) || (req.body.debttaken > 0)) {
+        Boat.findById(req.body.boatid, function (boaterr, boat) {
+          if (boaterr) { return handleError(res, boaterr); }
+          if(!boat) { return res.send(404); }
+          var updateVal = {debt:req.body.debt};
+          var updated = _.merge(boat, updateVal);
+          updated.save(function (boaterr) {
+            if (boaterr) { return handleError(res, boaterr); }
+            return res.json(200, trip);
+          });
+        });
+      } else {
+        return res.json(200, trip);
+      }
     });
   });
 };

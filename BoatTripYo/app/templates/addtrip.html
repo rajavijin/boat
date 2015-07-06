@@ -18,16 +18,6 @@
         <span class="input-label">Income</span>
         <input name="income" type="number" ng-model="addtrip.income" required>
       </label>
-  <label class="item item-input item-icon-left" ng-class="{ 'has-errors' : addtripForm.ownerp.$invalid, 'no-errors' : addtripForm.ownerp.$valid}">
-    <i class="icon ion-ios-pie-outline positive"></i>
-    <span class="input-label">Owner%</span>
-    <input name="ownerp" type="number" ng-model="addtrip.ownerp" required>
-  </label>
-  <label class="item item-input item-icon-left" ng-class="{ 'has-errors' : addtripForm.workerp.$invalid, 'no-errors' : addtripForm.workerp.$valid}">
-    <i class="icon ion-ios-pie-outline positive"></i>
-    <span class="input-label">Worker%</span>
-    <input type="number" name="workerp" ng-model="addtrip.workerp" required>
-  </label>
   <label class="item item-input item-icon-left">
     <i class="icon ion-waterdrop positive"></i>
     <span class="input-label">Diesel</span>
@@ -48,11 +38,26 @@
     <span class="input-label">Food</span>
     <input type="number" ng-model="addtrip.food">
   </label>
-  <label class="item item-input item-icon-left" ng-class="{ 'has-errors' : addtripForm.bataperday.$invalid, 'no-errors' : addtripForm.bataperday.$valid}">
-    <i class="icon ion-social-bitcoin-outline positive"></i>
-    <span class="input-label">Bata/Day</span>
-    <input type="number" name="bataperday" ng-model="addtrip.bataperday" required>
+  <label class="item item-input item-icon-left" ng-if="addtrip.debttaken > 0">
+    <i class="icon ion-coffee positive"></i>
+    <span class="input-label">Debt</span>
+    <input type="number" ng-model="addtrip.debttaken">
   </label>
+      <label class="item item-input item-icon-left" ng-class="{ 'has-errors' : addtripForm.ownerp.$invalid, 'no-errors' : addtripForm.ownerp.$valid}">
+        <i class="icon ion-ios-pie-outline positive"></i>
+        <span class="input-label">Owner%</span>
+        <input name="ownerp" type="number" ng-model="addtrip.ownerp" required>
+      </label>
+      <label class="item item-input item-icon-left" ng-class="{ 'has-errors' : addtripForm.workerp.$invalid, 'no-errors' : addtripForm.workerp.$valid}">
+        <i class="icon ion-ios-pie-outline positive"></i>
+        <span class="input-label">Worker%</span>
+        <input type="number" name="workerp" ng-model="addtrip.workerp" required>
+      </label>
+      <label class="item item-input item-icon-left" ng-class="{ 'has-errors' : addtripForm.bataperday.$invalid, 'no-errors' : addtripForm.bataperday.$valid}">
+        <i class="icon ion-social-bitcoin-outline positive"></i>
+        <span class="input-label">Bata/Day</span>
+        <input type="number" name="bataperday" ng-model="addtrip.bataperday" required>
+      </label>
     <label class="item item-divider item-icon-left item-icon-right">
     <i class="icon ion-navicon-round positive"></i>
     <span class="input-label">Extra</span>
