@@ -109,6 +109,7 @@ angular.module('starter.controllers', ['starter.services'])
       if(uuid && (user.email == 'demo')) params.uuid = "default,"+uuid;
       $scope.title = $rootScope.filtersData.year +" Dashboard";    
       $ionicLoading.show({template:'<ion-spinner icon="lines" class="spinner-calm"></ion-spinner>'});
+      var totalmembers = {}
       MyService.getFilteredTrips(params).then(function(trips) {
         if(trips.length > 0) {
           $scope.dashboardStatus = "not empty";
@@ -125,12 +126,11 @@ angular.module('starter.controllers', ['starter.services'])
             all.income.total = all.income.total + trips[i].income;
             all.spending.total = all.spending.total + trips[i].totalspending;
             var members = trips[i].members;
-            var totalmembers = {}
             for (var m = 0; m < members.length; m++) {
               if(!totalmembers[members[m].name]) {
                 totalmembers[members[m].name] = {total:parseInt(members[m].total),percentagelevel:members[m].salarylevel,name:members[m].name};
               } else {
-                totalmembers[members[m].name].total = totalmembers[members[m].name].total + parseInt(members[m].total);
+                totalmembers[members[m].name].total += parseInt(members[m].total);
                 totalmembers[members[m].name].salarylevel = members[m].salarylevel;
                 totalmembers[members[m].name].name = members[m].name;
               }
@@ -197,18 +197,36 @@ angular.module('starter.controllers', ['starter.services'])
     }
   }
 })
-.controller('TripDashboardCtrl', function($scope, $state, $cordovaSQLite, $stateParams, MyService, $ionicLoading) {
+.controller('TripDashboardCtrl', function($scope, $rootScope, $state, $cordovaSQLite, $ionicPopup, $stateParams, MyService, $ionicLoading) {
   $scope.currentuser = user;
   $scope.editTrip = function() {
     $state.go('app.edittrip', {id:$stateParams.id}, {reload:true});
   }
   $scope.deleteTrip = function() {
-    if(MyService.online()) {
-      MyService.deleteTrip({id:$stateParams.id}).then(function(deleted) {
-        console.log("deleted", deleted);
-        $state.go('app.dashboard', {}, {reload:true});
-      })
-    }
+    var confirmPopup = $ionicPopup.confirm({
+     title: $scope.trip.name,
+     template: 'Are you sure you want to delete this Trip?'
+    });
+    confirmPopup.then(function(res) {
+     if(res) {
+      if(MyService.online()) {
+        MyService.deleteTrip({id:$stateParams.id}).then(function(deleted) {
+          console.log("deleted", deleted);
+          var tripdate = $scope.trip.tripdate.split("-");
+          console.log("tripdate", tripdate);
+          console.log("filters data", $rootScope.filtersData);
+          /*if(Object.keys($rootScope.filtersData[tripdate[0]][tripdate[1]]).length == 1) {
+            delete $rootScope.filtersData[tripdate[0]][tripdate[1]];
+            localStorage.setItem("filtersData", JSON.stringify($rootScope.filtersData));
+          }*/
+          $state.go('app.dashboard', {}, {reload:true});
+        })
+      }
+       console.log('You are sure');
+     } else {
+       console.log('You are not sure');
+     }
+    });
   }
   $scope.getTripData = function() {
     if(MyService.online()) {
@@ -232,6 +250,8 @@ angular.module('starter.controllers', ['starter.services'])
   }
 })
 .controller('AddtripCtrl', function($scope, $rootScope, $state, $filter, $ionicSideMenuDelegate, $cordovaSQLite, $window, MyService) {
+  var user = JSON.parse(localStorage.getItem("user"));
+  console.log("user", user);
   $ionicSideMenuDelegate.$getByHandle('right-menu').canDragContent(false);
   var addtrip = {members:{}};
   addtrip.boatid = user.boatid;
@@ -278,6 +298,7 @@ angular.module('starter.controllers', ['starter.services'])
       if(!tripdetails.net) tripdetails.net = 0;
       if(!tripdetails.food) tripdetails.food = 0;
       if(!tripdetails.bataperday) tripdetails.bataperday = 0;
+      tripdetails.remainingbalance = '';
       var filtersDate = tripdetails.tripdate.split("-");
       var filtersData = localStorage.getItem('filtersData');
       if(filtersData) {
@@ -312,12 +333,13 @@ angular.module('starter.controllers', ['starter.services'])
       tripdetails.balance = parseInt((tripdetails.income - tripdetails.totalspending).toFixed(2));
       tripdetails.ownerincome = parseInt((tripdetails.balance * (tripdetails.ownerp/100)).toFixed(2));
       tripdetails.workerincome = parseInt((tripdetails.balance * (tripdetails.workerp/100)).toFixed(2));
-      for (var i = 0; i < user.members.length; i++) {
-        if(tripdetails.allmembers[user.members[i]._id]) {
-          var memberinfo = user.members[i];
+      for (var mi = 0; mi < user.members.length; mi++) {
+        if(tripdetails.allmembers[user.members[mi]._id]) {
+          var memberinfo = user.members[mi];
           if(tripdetails.workerincome < 0) {
             var salarylevelpercentage = 1 * (100/totalpartitions);
-            tripdetails.remainingbalance = parseInt((user.members[i].remainingbalance + (tripdetails.workerincome * (salarylevelpercentage/100))).toFixed(2));
+/*            user.members[mi].remainingbalance = user.members[mi].remainingbalance + parseInt((tripdetails.workerincome * (salarylevelpercentage/100)).toFixed(2));;
+            tripdetails.remainingbalance = true;*/
           } else {
             var salarylevelpercentage = user.members[i].salarylevel * (100/totalpartitions);
           } 
@@ -326,7 +348,11 @@ angular.module('starter.controllers', ['starter.services'])
         }
       };
       MyService.addTrip(tripdetails).then(function(tripval) {
-        $state.go('app.tripdashboard', {id:tripval._id}, {reload:true});
+        if(tripdetails.remainingbalance) {
+
+        } else {
+          $state.go('app.tripdashboard', {id:tripval._id}, {reload:true});
+        }
       })
     }
   }
@@ -456,6 +482,8 @@ angular.module('starter.controllers', ['starter.services'])
         } else {
           $scope.noUsers = true;
         }
+        user.members = users;
+        localStorage.setItem("user", JSON.stringify(user));
       }, function(err) {
         console.log("error loading all users", err);
       }).finally(function() {$ionicLoading.hide();})
@@ -514,7 +542,7 @@ angular.module('starter.controllers', ['starter.services'])
     }
   }
 })
-.controller('UserDashboardCtrl', function($scope, $state, $stateParams, MyService) {
+.controller('UserDashboardCtrl', function($scope, $state, $ionicPopup, $stateParams, MyService) {
   var user = JSON.parse(localStorage.getItem('user'));
   var index = -1;
   $scope.currentuser = user;
@@ -522,16 +550,28 @@ angular.module('starter.controllers', ['starter.services'])
     $state.go('app.edituser',{id:$stateParams.id}, {reload:true});
   }
   $scope.deleteUser = function() {
-    if(MyService.online()) {
-      MyService.deleteUser({id:$stateParams.id}).then(function(deleted) {
-        console.log("deleted", deleted);
-        delete user.members[index];
-        localStorage.setItem("user", JSON.stringify(user));
-        $state.go('app.users', {}, {reload:true});
-      }, function(err) {
-        console.log("error on deleting a user", err);
-      });
-    }
+    var confirmPopup = $ionicPopup.confirm({
+      title: $scope.member.name,
+      template: 'Are you sure you want to delete this User?'
+    });
+    confirmPopup.then(function(res) {
+      if(res) {
+        console.log('You are sure');
+        if(MyService.online()) {
+          MyService.deleteUser({id:$stateParams.id}).then(function(deleted) {
+            console.log("deleted", deleted);
+            user.members.splice(index, 1);
+            console.log("user", user.members);
+            localStorage.setItem("user", JSON.stringify(user));
+            $state.go('app.users', {}, {reload:true});
+          }, function(err) {
+            console.log("error on deleting a user", err);
+          });
+        }
+      } else {
+        console.log('You are not sure');
+      }
+    });
   }
   $scope.getUserData = function() {
     var member = {};
@@ -579,26 +619,30 @@ angular.module('starter.controllers', ['starter.services'])
       if(($scope.user.email == 'demo') && uuid) {
         $scope.user.uuid = "default,"+uuid;
       }
-      MyService.login($scope.user).then(function(user) {
-        var iuser = {
-          user_id: user._id,
-          name: user.email,
-          role: user.role,
-          username: user.name,
-        }
-        // Identify your user with the Ionic User Service
-        $ionicUser.identify(iuser).then(function(){
-          console.log('Identified user ' + iuser.name + '\n ID ' + iuser.user_id);
-        })
-        $ionicAnalytics.register();
-        if(window.cordova) $ionicAnalytics.track('device', $cordovaDevice.getDevice());
-        $rootScope.filtersData = user.filters;
-        $ionicLoading.hide();
-        $state.go("app.dashboard", {},  {'reload': true});
-      }, function(err) {
-        console.log("user login error", err);
-        $ionicLoading.hide();
-      });
+      if(MyService.online()) {
+        MyService.login($scope.user).then(function(user) {
+          var iuser = {
+            user_id: user._id,
+            name: user.email,
+            role: user.role,
+            username: user.name,
+          }
+          // Identify your user with the Ionic User Service
+          $ionicUser.identify(iuser).then(function(){
+            console.log('Identified user ' + iuser.name + '\n ID ' + iuser.user_id);
+          })
+          $ionicAnalytics.register();
+          if(window.cordova) $ionicAnalytics.track('device', $cordovaDevice.getDevice());
+          $rootScope.filtersData = user.filters;
+          $ionicLoading.hide();
+          $state.go("app.dashboard", {},  {'reload': true});
+        }, function(err) {
+          console.log("user login error", err);
+          $ionicLoading.hide();
+        });
+      } else {
+        alert("Please Check your internet connection");
+      }
     }
   }
 })
@@ -607,6 +651,7 @@ angular.module('starter.controllers', ['starter.services'])
     $ionicHistory.clearCache();
     $ionicHistory.clearHistory();
     localStorage.removeItem('uid');
+    localStorage.removeItem('user');
     localStorage.removeItem("filtersData");
     $state.go("home", {}, {reload: true});
 });

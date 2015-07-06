@@ -1,7 +1,7 @@
 <ion-view cache-view="false" ng-init="getTripData()">
    <ion-nav-title>{{trip.startdate}} Details</ion-nav-title>
       <ion-nav-buttons side="right">
-      <button ng-if="currentuser.email !='demo'" class="button button-icon button-clear ion-ios-trash" ng-click="deleteTrip()"></button>
+      <button ng-if="currentuser.email !='demo'" class="button back-button button-icon button-clear ion-ios-trash" ng-click="deleteTrip()"></button>
       <button class="button button-icon button-clear ion-edit" ng-click="editTrip()"></button>
     </ion-nav-buttons>
    <ion-content class="has-header">

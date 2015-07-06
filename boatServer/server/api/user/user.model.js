@@ -13,7 +13,7 @@ var UserSchema = new Schema({
   mobile: String,
   address: String,
   salarylevel: Number,
-  remainingbalance: Number,
+  remainingbalance: {type:Number, default:0},
   validityfrom: Date,
   validitytill: Date,
   total:Number,
