@@ -13,12 +13,12 @@ angular.module('boatServerApp')
     $scope.boat.bataperday = 200;
 	$scope.processing = false;
     $scope.csvImport = function(csvdata) {
+        var updatedResults = [];
+        var lastknown = [];
+        $scope.updatedItems = [];
     	console.log("csvdata", csvdata);
         if(csvdata && !$scope.processing) {
             $scope.processing = true;
-            var updatedResults = [];
-            var lastknown = [];
-            $scope.updatedItems = [];
             var newdata = csvdata;
             angular.forEach(newdata, function(data, index) {
                 var lastknownData = {};
@@ -35,23 +35,22 @@ angular.module('boatServerApp')
                     }
                 });
             })
-            var boatData = $scope.boat;
-            console.log("boatData", boatData);
-            $http.post('/api/boat', boatData).success(function(boat) {
-                console.log("boat", boat);
-		        var owner = {};
-		        owner.role = "owner";
-                owner.email = boat.mobile;
-		        owner.mobile = boat.mobile;
-		        owner.name = boat.owner;
-		        owner.import = true;
-		        lastknown.push(owner);
-                createUser(lastknown, boat, 0);
-            }).error(function(err) {
-                console.log('error', err);
-            });        
-
         }
+        var boatData = $scope.boat;
+        console.log("boatData", boatData);
+          $http.post('/api/boat', boatData).success(function(boat) {
+            console.log("boat", boat);
+            var owner = {};
+            owner.role = "owner";
+            owner.email = boat.mobile;
+            owner.mobile = boat.mobile;
+            owner.name = boat.owner;
+            owner.import = true;
+            lastknown.push(owner);
+            createUser(lastknown, boat, 0);
+        }).error(function(err) {
+            console.log('error', err);
+        });        
     }
 
     var createUser = function(userData, boatData, i) {

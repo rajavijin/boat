@@ -6,9 +6,9 @@ var controller = require('./trip.controller');
 var router = express.Router();
 
 router.get('/', controller.index);
-router.get('/:boatid', controller.trips);
-router.get('/:boatid/:id', controller.show);
-router.get('/:boatid/:start/:end', controller.alltrips);
+router.get('/:boatid/:uuid', controller.trips);
+router.get('/:id', controller.show);
+router.get('/:boatid/:uuid/:start/:end', controller.alltrips);
 router.post('/', controller.create);
 router.post('/:id', controller.update);
 router.put('/:id', controller.update);

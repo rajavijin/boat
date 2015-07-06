@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="com.highvalue.boattrip" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.ionicframework.boattrip" version="0.0.2" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>BoatTrip</name>
   <description>
         Manage Boat Trips
     </description>
-  <author email="sahayarexj@gmail.com" href="#">
+  <author email="sahayarexj@gmail.com" href="http://52.25.97.15/">
       High Value Software Solutions
     </author>
   <content src="index.html"/>

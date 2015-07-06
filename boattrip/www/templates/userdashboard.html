@@ -1,21 +1,2 @@
-<ion-view cache-view="false" ng-init="getUserData()">
-   <ion-nav-title>{{member.name}}</ion-nav-title>
-      <ion-nav-buttons side="right">
-      <button ng-if="currentuser.email !='demo'" class="button button-icon button-clear ion-edit" ng-click="editUser()"></button>
-    </ion-nav-buttons>
-   <ion-content class="has-header">
-      <ion-refresher pulling-text="Pull to refresh" on-refresh="getTripData()"></ion-refresher>
-<!--       <chart id="ssubjects" config="ssubjectsConfig" ng-if="dashboardStatus != 'empty'"></chart>
-      <chart id="sattendance" config="sattendanceConfig" ng-if="dashboardStatus != 'empty'" class="noclick"></chart> -->
-      <div class="list">
-      <a class="item item-icon-left first" href="#">
-      <i class="icon ion-man positive"></i>Name<span class="badge badge-positive">{{member.name}}</span></a> 
-      <a class="item item-icon-left first" href="#">
-      <i class="icon ion-ribbon-a positive"></i>Role<span class="badge badge-positive">{{member.role}}</span></a>
-      <a class="item item-icon-left first" href="#">
-      <i class="icon ion-social-usd-outline positive"></i>Salary Level<span class="badge badge-positive">{{member.salarylevel}}</span></a> 
-      <a class="item item-icon-left first" href="#" ng-if="member.mobile">
-      <i class="icon ion-iphone positive"></i>Mobile<span class="badge badge-positive">{{member.mobile}}</span></a> 
-      </div>
-   </ion-content>
-</ion-view>
+<ion-view cache-view="false" ng-init="getUserData()"><ion-nav-title>{{member.name}}</ion-nav-title><ion-nav-buttons side="right"><button ng-if="currentuser.email !='demo'" class="button button-icon button-clear ion-edit" ng-click="editUser()"></button></ion-nav-buttons><ion-content class="has-header"><ion-refresher pulling-text="Pull to refresh" on-refresh="getTripData()"></ion-refresher><!--       <chart id="ssubjects" config="ssubjectsConfig" ng-if="dashboardStatus != 'empty'"></chart>
+      <chart id="sattendance" config="sattendanceConfig" ng-if="dashboardStatus != 'empty'" class="noclick"></chart> --><div class="list"><a class="item item-icon-left first" href="#"><i class="icon ion-man positive"></i>Name<span class="badge badge-positive">{{member.name}}</span></a> <a class="item item-icon-left first" href="#"><i class="icon ion-ribbon-a positive"></i>Role<span class="badge badge-positive">{{member.role}}</span></a> <a class="item item-icon-left first" href="#"><i class="icon ion-social-usd-outline positive"></i>Salary Level<span class="badge badge-positive">{{member.salarylevel}}</span></a> <a class="item item-icon-left first" href="#" ng-if="member.mobile"><i class="icon ion-iphone positive"></i>Mobile<span class="badge badge-positive">{{member.mobile}}</span></a></div></ion-content></ion-view>

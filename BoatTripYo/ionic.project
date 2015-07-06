@@ -1,0 +1,17 @@
+{
+  "name": "BoatTrip",
+  "app_id": "02a4a798",
+  "proxies": [
+    {
+      "path": "/api",
+      "proxyUrl": "http://localhost:9000/api"
+    }
+  ],
+  "browsers": [
+    {
+      "platform": "android",
+      "browser": "crosswalk",
+      "version": "12.41.296.5"
+    }
+  ]
+}

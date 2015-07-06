@@ -1,0 +1,34 @@
+<ion-view  cache-view="false" title="{{title}}">
+<ion-content>
+<div class="list">
+  <label class="item item-input">
+    <span class="input-label">Name</span>
+    <input type="text" ng-model="adduser.name">
+  </label>
+  <label class="item item-input item-select">
+    <span class="input-label">Role</span>
+    <select ng-model="adduser.role">
+      <option ng-selected="defaultSelect(role)" ng-repeat="(k,role) in roles">{{role}}</option>
+    </select>
+  </label>  
+  <label class="item item-input">
+    <span class="input-label">Salary Level</span>
+    <input type="number" ng-model="adduser.salarylevel" placeholder="eg: 0.5">
+  </label>
+  <label class="item item-input" ng-if="action == 'create'">
+    <span class="input-label">Mobile</span>
+    <input type="text" ng-model="adduser.email">
+  </label>  
+  <label class="item item-input" ng-if="action == 'update'">
+    <span class="input-label">Mobile</span>
+    <input type="text" ng-model="adduser.mobile">
+  </label>    
+<!--   <label class="item item-input">
+    <textarea placeholder="Address" ng-model="adduser.mobile"></textarea>
+  </label>    -->
+ </div>
+<div class="padding">
+  <button class="button button-block button-positive activated" ng-click='submit()'>Submit</button>
+</div>
+ </ion-content>
+</ion-modal-view>

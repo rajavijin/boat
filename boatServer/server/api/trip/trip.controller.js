@@ -23,7 +23,11 @@ exports.show = function(req, res) {
 
 // Get trips
 exports.trips = function(req, res) {
-  Trip.find({boatid: req.params.boatid}, null, {sort:{startdate: 1}}, function (err, trip) {
+  console.log("requested trips", req.params);
+  if(req.params.uuid == "undefined") {delete req.params.uuid;}
+  else {var uuids = req.params.uuid.split(",");req.params.uuid = {$in:uuids};}
+
+  Trip.find(req.params, null, {sort:{startdate: 1}}, function (err, trip) {
     if(err) { return handleError(res, err); }
     if(!trip) { return res.send(404); }
     return res.json(trip);
@@ -32,7 +36,12 @@ exports.trips = function(req, res) {
 
 // Get trips
 exports.alltrips = function(req, res) {
-  Trip.find({boatid: req.params.boatid,startdate:{$gte:req.params.start,$lte:req.params.end}}, null, {sort:{startdate: 1}}, function (err, trip) {
+  console.log("requested", req.params);
+  var params = {boatid: req.params.boatid,startdate:{$gte:req.params.start,$lte:req.params.end}};
+  if(req.params.uuid == "undefined") {delete req.params.uuid;}
+  else {var uuids = req.params.uuid.split(",");params.uuid = {$in:uuids};}
+  console.log("params", params);
+  Trip.find(params, null, {sort:{startdate: 1}}, function (err, trip) {
     if(err) { return handleError(res, err); }
     if(!trip) { return res.send(404); }
     return res.json(trip);

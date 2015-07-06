@@ -72,7 +72,7 @@ exports.create = function (req, res, next) {
     newUser.save(function(err, user) {
       if (err) return validationError(res, err);
       var token = jwt.sign({_id: user._id }, config.secrets.session, { expiresInMinutes: 60*5 });
-      res.json({ token: token });
+      res.json({_id: user._id, name:user.name, salarylevel:user.salarylevel,email:user.email,role:user.role,mobile:user.mobile});
     });
   }  
 };
@@ -100,6 +100,7 @@ User.findOne({
             boatname: user.boatname,
             boatid: user.boatid
           }
+          userdetails.token = jwt.sign({_id: user._id }, config.secrets.session, { expiresInMinutes: 60*5 });
           userdetails.members = members;
           Boat.findOne({_id:user.boatid}, function(err, boatDetails) {
             console.log("boat details", boatDetails);
@@ -113,7 +114,12 @@ User.findOne({
               "Nov", "Dec"
             ];
             userdetails.filters = {years:{}};
-            Trip.find({boatid:user.boatid}, 'startdate', {sort:{startdate:1}}, function(err, trips) {
+            var tparams = {boatid:user.boatid};
+            if((user.email == 'demo') && req.body.uuid) {
+              var uuids = req.body.uuid.split(",");
+              tparams.uuid = {$in:uuids};
+            }
+            Trip.find(tparams, 'startdate', {sort:{startdate:1}}, function(err, trips) {
               console.log("trips", trips);
               if(trips) {
                 for (var i = 0; i < trips.length; i++) {
@@ -151,6 +157,16 @@ exports.show = function (req, res, next) {
   });
 };
 
+// Get users
+exports.allusers = function(req, res) {
+  console.log("requested trips", req.params);
+  req.params.role = {$ne:'owner'};
+  User.find(req.params, null, {sort:{salarylevel: 1}}, function (err, users) {
+    if(err) { return handleError(res, err); }
+    if(!users) { return res.send(404); }
+    return res.json(users);
+  });
+};
 /**
  * Deletes a user
  * restriction: 'admin'
@@ -180,6 +196,21 @@ exports.changePassword = function(req, res, next) {
     } else {
       res.send(403);
     }
+  });
+};
+
+// Updates an existing trip in the DB.
+exports.update = function(req, res) {
+  console.log("req.body", req.body);
+  if(req.body._id) { delete req.body._id; }
+  User.findById(req.params.id, function (err, user) {
+    if (err) { return handleError(res, err); }
+    if(!user) { return res.send(404); }
+    var updated = _.merge(user, req.body);
+    updated.save(function (err) {
+      if (err) { return handleError(res, err); }
+      return res.json(200, user);
+    });
   });
 };
 

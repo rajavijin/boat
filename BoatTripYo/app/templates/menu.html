@@ -1,0 +1,68 @@
+<ion-side-menus enable-menu-with-back-views="true" ng-init="AppCtrl" delegate-handle="right-menu">
+  <ion-side-menu-content>
+    <ion-nav-bar ng-show="uid" class="bar-positive">
+      <ion-nav-back-button>
+      </ion-nav-back-button>
+
+      <ion-nav-buttons side="left">
+        <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
+        </button>
+      </ion-nav-buttons>
+      <ion-nav-buttons side="right"><button ng-show="filters" class="button button-icon button-clear ion-funnel" menu-toggle="right"></button></ion-nav-buttons>
+    </ion-nav-bar>
+    <ion-nav-view name="menuContent"></ion-nav-view>
+  </ion-side-menu-content>
+  <ion-side-menu side="left">
+    <ion-content>
+      <ion-list class="menu-list filters">
+        <ion-item nav-clear class="center menu-logo"><h2><i class="icon ion-android-boat positive" style="font-size:60px"></i></h2><h2>Welcome {{currentuser.name}}</h2></ion-item>
+        <ion-item menu-close class="item-icon-left" href="#/app/dashboard">
+        <i class="icon ion-stats-bars positive"></i>
+        <b>Dashboard</b>
+        </ion-item>
+        <ion-item menu-close class="item-icon-left" href="#/app/overalldashboard">
+        <i class="icon ion-ios-pulse-strong positive"></i>
+        <b>Overall Dashboard</b>
+        </ion-item>        
+        <ion-item menu-close class="item-icon-left" href="#/app/addtrip">
+        <i class="icon ion-compose positive"></i>
+        <b>Add trip</b>
+        </ion-item>
+        <ion-item menu-close class="item-icon-left" href="#/app/trips">
+        <i class="icon ion-android-boat positive"></i>
+        <b>Trips</b>
+        </ion-item>
+        <ion-item menu-close class="item-icon-left" href="#/app/users">
+        <i class="icon ion-ios-people positive"></i>
+        <b>Users</b>
+        </ion-item>              
+        <ion-item ng-if="currentuser.email != 'demo'" menu-close class="item-icon-left" href="#/app/adduser">
+        <i class="icon ion-person-add positive"></i>
+        <b>Add user</b>
+        </ion-item>        
+        <ion-item menu-close class="item-icon-left" href="#/app/profile">
+        <i class="icon ion-gear-b positive"></i>
+        <b>Profile</b>
+        </ion-item>
+        <ion-item menu-close class="item-icon-left" href="#/logout">
+          <i class="icon ion-log-out positive"></i>
+          <b>Logout</b>
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ion-side-menu>
+  <ion-side-menu ng-if="filters" side="right">
+    <ion-content drag-content="false">
+       <form>
+          <ion-list class="menu-list filters">
+            <ion-item class="item-icon-left positive"><i class="icon ion-clock"></i><strong>Year</strong></ion-item>
+            <ion-radio class="item item-complex" name="year" ng-model="filtersData.year" ng-repeat="(yk,yeark) in filtersData.years" ng-value="{{yk}}">{{yk}}</ion-radio>
+            <ion-item ng-if="monthfilter" class="item-icon-left positive"><i class="icon ion-clipboard"></i><strong>Month</strong></ion-item>
+            <ion-radio ng-if="monthfilter" class="item item-complex" name="month" ng-model="filtersData.month" ng-repeat="(mk,monthv) in filtersData.years[filtersData.year]" ng-value="{{mk}}">{{monthv}}</ion-radio>
+            <ion-item ng-if="page == 'dashboard'" class="item submit first"><button menu-close class="button icon-left ion-chevron-left button-block button-positive" ng-click="dashboardFilters()">Go</button></ion-item>
+            <ion-item ng-if="page == 'overalldashboard'" class="item submit first"><button menu-close class="button icon-left ion-chevron-left button-block button-positive" ng-click="overalldashboardFilters()">Go</button></ion-item>            
+          </ion-list>
+       </form>
+    </ion-content>
+  </ion-side-menu>  
+</ion-side-menus>
