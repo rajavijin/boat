@@ -341,7 +341,7 @@ angular.module('starter.controllers', ['starter.services'])
 /*            user.members[mi].remainingbalance = user.members[mi].remainingbalance + parseInt((tripdetails.workerincome * (salarylevelpercentage/100)).toFixed(2));;
             tripdetails.remainingbalance = true;*/
           } else {
-            var salarylevelpercentage = user.members[i].salarylevel * (100/totalpartitions);
+            var salarylevelpercentage = user.members[mi].salarylevel * (100/totalpartitions);
           } 
           memberinfo.total = parseInt((tripdetails.workerincome * (salarylevelpercentage/100)).toFixed(2));
           tripdetails.members.push(memberinfo);
@@ -500,6 +500,7 @@ angular.module('starter.controllers', ['starter.services'])
     uu.mobile = uu.email;
     uu.boatid = user.boatid;
     uu.boatname = user.boatname;
+    uu.active = true;
     if(MyService.online()) {
       MyService.addUser(uu).then(function(created) {
         user.members.push(created);
@@ -558,7 +559,8 @@ angular.module('starter.controllers', ['starter.services'])
       if(res) {
         console.log('You are sure');
         if(MyService.online()) {
-          MyService.deleteUser({id:$stateParams.id}).then(function(deleted) {
+          $scope.member.active = false;
+          MyService.updateUser($scope.member).then(function(deleted) {
             console.log("deleted", deleted);
             user.members.splice(index, 1);
             console.log("user", user.members);

@@ -8,17 +8,17 @@
 <!--       <ion-refresher pulling-text="Pull to refresh" on-refresh="getTripData()"></ion-refresher> -->
       <ion-list>
          <ion-item class="item item-icon-left positive" href="#">
-            <i class="icon ion-person"></i>
+            <i class="icon ion-ios-calendar-outline"></i>
             <h2>Start Date</h2>
             <span class="badge badge-positive">{{trip.startdate}}</span>
          </ion-item>
          <ion-item class="item item-icon-left positive" href="#">
-            <i class="icon ion-person"></i>
+            <i class="icon ion-ios-calendar-outline"></i>
             <h2>End Date</h2>
             <span class="badge badge-positive">{{trip.enddate}}</span>
          </ion-item>
          <ion-item class="item item-icon-left positive" href="#">
-            <i class="icon ion-person"></i>
+            <i class="icon ion-waterdrop"></i>
             <h2>Diesel</h2>
             <span class="badge badge-positive">{{trip.diesel}}</span>
          </ion-item>
@@ -36,7 +36,7 @@
             <h2>Food</h2><span class="badge badge-positive">{{trip.food}}</span>
          </ion-item> 
          <ion-item class="item item-icon-left" href="#" ng-if="extv.name" ng-repeat="extv in trip.extra">
-            <i class="icon ion-ios-grid-view-outline positive"></i>
+            <i class="icon ion-more positive"></i>
             <h2>{{extv.name}}</h2><span class="badge badge-positive">{{extv.price}}</span>
          </ion-item>
          <ion-item class="item item-icon-left" href="#">
@@ -44,11 +44,11 @@
             <h2>Bata</h2><span class="badge badge-positive">{{trip.bata}}</span>
          </ion-item>      
          <ion-item class="item item-icon-left" href="#">
-            <i class="icon ion-social-usd positive"></i>
+            <i class="icon ion-social-usd-outline positive"></i>
             <h2>Income</h2><span class="badge badge-positive">{{trip.income}}</span>
          </ion-item> 
          <ion-item class="item item-icon-left" href="#">
-            <i class="icon ion-social-bitcoin positive"></i>
+            <i class="icon ion-social-usd positive"></i>
             <h2>Total Spending</h2><span class="badge badge-positive">{{trip.totalspending}}</span>
          </ion-item> 
          <ion-item class="item item-icon-left" href="#">

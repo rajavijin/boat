@@ -53,7 +53,28 @@ exports.create = function (req, res, next) {
         });      
       }
     });      
-  } else {    
+  } else { 
+    User.findOne({
+      email:req.body.mobile,
+      boatid: req.body.boatid
+    }, '-salt -hashedPassword', function(err, bUserData) {
+      if (err) return validationError(res, err);
+      if(bUserData) {
+        var userUpdated = _.merge(bUserData, req.body);
+        userUpdated.save(function (err) {
+          if (err) { return validationError(res, err); }
+          console.log("User updated");
+          return res.json(200, bUserData); 
+        });
+      } else {
+        var userStudent = new User(req.body);
+        userStudent.save(function(err, bUserData) {
+          if (err) return validationError(res, err);
+          console.log("User Created");
+          return res.json(bUserData);
+        });      
+      }
+    });     
     /*var newUser = new User(userData);
     newUser.provider = "local";
     newUser.role = 'user';
@@ -67,13 +88,13 @@ exports.create = function (req, res, next) {
       var token = jwt.sign({_id: user._id }, config.secrets.session, { expiresInMinutes: 60*5 });
       res.json({ token: token });
     });*/
-    var newUser = new User(req.body);
+    /*var newUser = new User(req.body);
     newUser.provider = 'local';
     newUser.save(function(err, user) {
       if (err) return validationError(res, err);
       var token = jwt.sign({_id: user._id }, config.secrets.session, { expiresInMinutes: 60*5 });
       res.json({_id: user._id, name:user.name, salarylevel:user.salarylevel,email:user.email,role:user.role,mobile:user.mobile});
-    });
+    });*/
   }  
 };
 
@@ -90,7 +111,7 @@ User.findOne({
     if(user.authenticate(req.body.password)) {
       if (!user) return res.json(401);
       console.log("authenticated", user);
-      User.find({boatid:user.boatid,role:{$ne:'owner'}}, 'name email role salarylevel mobile remainingbalance', function(err, members) {
+      User.find({boatid:user.boatid,role:{$ne:'owner'},active:true}, 'name email role salarylevel mobile remainingbalance', function(err, members) {
         if(user.active) {
           var userdetails = { 
             _id: '55880b2426cfdfed3c704e48',
@@ -161,6 +182,7 @@ exports.show = function (req, res, next) {
 exports.allusers = function(req, res) {
   console.log("requested trips", req.params);
   req.params.role = {$ne:'owner'};
+  req.params.active = true;
   User.find(req.params, null, {sort:{salarylevel: 1}}, function (err, users) {
     if(err) { return handleError(res, err); }
     if(!users) { return res.send(404); }
