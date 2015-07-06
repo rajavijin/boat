@@ -1,9 +1,19 @@
 // Ionic Starter App
 var user = {};
 var filtersData = {};
+var translations = {
+  "en": {
+    "language": "Language",
+    "profile": "Profile"
+  },
+  "tn": {
+    "language": "மொழி",
+    "profile": "tamil profile"
+  }
+}
 //var db = '';
 
-angular.module('starter', ['ionic', 'ngCordova', 'ionic.service.core', 'ionic.service.analytics','starter.controllers'])
+angular.module('starter', ['ionic', 'ngCordova', 'pascalprecht.translate', 'ionic.service.core', 'ionic.service.analytics','starter.controllers'])
 .config(function($ionicAppProvider) {
   $ionicAppProvider.identify({
     app_id: '02a4a798',
@@ -113,9 +123,14 @@ angular.module('starter', ['ionic', 'ngCordova', 'ionic.service.core', 'ionic.se
     }
   };
 })
-.config(function($stateProvider, $urlRouterProvider) {
-  $stateProvider
+.config(function($stateProvider, $urlRouterProvider, $translateProvider) {
+  for(lang in translations){
+    $translateProvider.translations(lang, translations[lang]);
+  }
+  
+  $translateProvider.preferredLanguage('en');
 
+  $stateProvider
   .state('app', {
     url: "/app",
     abstract: true,

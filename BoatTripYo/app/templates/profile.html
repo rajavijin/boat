@@ -1,4 +1,4 @@
-<ion-view cache-view="false" title="Profile" ng-init="getProfile()">
+<ion-view cache-view="false" title="{{ 'profile' | translate }}" ng-init="getProfile()">
   <ion-content>
   <ion-list>
     <ion-item class="item item-icon-left">
@@ -12,7 +12,13 @@
     <ion-item class="item item-icon-left" ng-if="currentuser.email != 'demo'">
     <i class="icon ion-ios-telephone positive"></i>
     <h2>{{user.email}}</h2>
-    </ion-item>        
+    </ion-item>
+    <ion-item class="item-icon-left positive"><i class="icon ion-ios-flag"></i><strong translate="language">Language</strong></ion-item>
+    <ion-radio class="item item-complex item-icon-left item-icon-right" ng-click="ChangeLanguage('{{l.code}}')" ng-value="'{{l.code}}'" ng-model="lang" ng-repeat="l in languages">
+    <i class="icon ion-ios-flag-outline positive"></i>
+    <h2>{{l.lang}}</h2>
+    </ion-radio>   
+<!--     <ion-radio ng-model="choice" ng-repeat="l in languages" ng-value="'{{l.code}}'">{{l.lang}}</ion-radio> -->
   </ion-list>
   </ion-content>
 </ion-view>

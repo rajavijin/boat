@@ -111,7 +111,7 @@ User.findOne({
     if(user.authenticate(req.body.password)) {
       if (!user) return res.json(401);
       console.log("authenticated", user);
-      User.find({boatid:user.boatid,role:{$ne:'owner'},active:true}, 'name email role salarylevel mobile remainingbalance', function(err, members) {
+      User.find({boatid:user.boatid,role:{$ne:'owner'},active:true}, '_id name email role salarylevel mobile', function(err, members) {
         if(user.active) {
           var userdetails = { 
             _id: '55880b2426cfdfed3c704e48',
@@ -184,7 +184,7 @@ exports.allusers = function(req, res) {
   console.log("requested trips", req.params);
   req.params.role = {$ne:'owner'};
   req.params.active = true;
-  User.find(req.params, null, {sort:{salarylevel: 1}}, function (err, users) {
+  User.find(req.params, '_id name email role salarylevel mobile', {sort:{salarylevel: 1}}, function (err, users) {
     if(err) { return handleError(res, err); }
     if(!users) { return res.send(404); }
     return res.json(users);
@@ -226,7 +226,7 @@ exports.changePassword = function(req, res, next) {
 exports.update = function(req, res) {
   console.log("req.body", req.body);
   if(req.body._id) { delete req.body._id; }
-  User.findById(req.params.id, function (err, user) {
+  User.findById(req.params.id, '_id name email role salarylevel mobile', function (err, user) {
     if (err) { return handleError(res, err); }
     if(!user) { return res.send(404); }
     var updated = _.merge(user, req.body);

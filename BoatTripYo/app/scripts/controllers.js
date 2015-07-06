@@ -633,7 +633,19 @@ angular.module('starter.controllers', ['starter.services'])
     }
   }
 })
-.controller('ProfileCtrl', function($scope, $rootScope, MyService) {
+.controller('ProfileCtrl', function($scope, $rootScope, MyService, $translate) {
+  $scope.languages = [{
+    code: "en",
+    lang: "English"
+  },{
+    code: "tn",
+    lang: "தமிழ்"
+  }]
+  $scope.lang = "en";
+  $scope.choice = "en";
+  $scope.ChangeLanguage = function(lang){
+    $translate.use(lang);
+  }
   $scope.getProfile = function() {
     $scope.user = user;
   }

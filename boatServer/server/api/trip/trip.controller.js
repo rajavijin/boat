@@ -63,6 +63,8 @@ exports.create = function(req, res) {
           return res.json(200, trip);
         });
       });
+    } else {
+      return res.json(200, trip);
     }
   });
 };
