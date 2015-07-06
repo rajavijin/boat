@@ -1,6 +1,7 @@
 angular.module('starter.controllers', ['starter.services'])
 
 .controller('AppCtrl', function($scope, $rootScope, $interval, $ionicAnalytics, $cordovaSQLite, MyService) {
+
   user = JSON.parse(localStorage.getItem('user')) || user;
   $rootScope.currentuser = user;
   $scope.uid = localStorage.getItem('uid') || '';
@@ -26,12 +27,12 @@ angular.module('starter.controllers', ['starter.services'])
     }
   })
 })
-.controller('DashboardCtrl', function($scope, $rootScope, $state, $cordovaSQLite, $ionicLoading, MyService) {
+.controller('DashboardCtrl', function($scope, $rootScope, $state, $cordovaSQLite, $ionicLoading, MyService, $filter) {
   var uuid = localStorage.getItem("uuid") || '';
   $rootScope.filters = true;
   $rootScope.monthfilter = true;
   $rootScope.page = "dashboard";
-  $scope.title = "Dashboard";
+  $scope.title = "";
   $rootScope.dashboardFilters = function() {
     var fmonth = ("0" + $rootScope.filtersData.month).slice(-2);
     if(!$rootScope.filtersData.years[$rootScope.filtersData.year][fmonth]) {
@@ -50,7 +51,7 @@ angular.module('starter.controllers', ['starter.services'])
       var endrange = $rootScope.filtersData.year +'-'+fmonth+'-31';
       var params = {boatid:user.boatid, start:startrange,end:endrange};
       if(uuid && (user.email == 'demo')) params.uuid = "default,"+uuid;
-      $scope.title = $rootScope.filtersData.year + " "+$rootScope.filtersData.years[$rootScope.filtersData.year][fmonth]+" Dashboard";
+      $scope.title = $rootScope.filtersData.year + " "+$rootScope.filtersData.years[$rootScope.filtersData.year][fmonth];
       $ionicLoading.show({template:'<ion-spinner icon="lines" class="spinner-calm"></ion-spinner>'});
       MyService.getFilteredTrips(params).then(function(trips) {
         if(trips.length > 0) {
@@ -73,26 +74,26 @@ angular.module('starter.controllers', ['starter.services'])
   var processVal = function(incomeLabels, income, spending) {
     $scope.incomeConfig = {
       chart: {renderTo: 'income',type: 'column', options3d: {enabled: true,alpha: 10,beta: 20,depth: 50}},
-      title: {text:"Income"},plotOptions: {series:{cursor:'pointer',events:{click:function(event){$state.go("app.tripdashboard", {id:event.point.id});}}},column: {depth: 25,showInLegend: false, dataLabels: {enabled: true,format: '{point.y}'}, events: {legendItemClick: function () {return false;}}}},
+      title: {text:$filter('translate')('income')},plotOptions: {series:{cursor:'pointer',events:{click:function(event){$state.go("app.tripdashboard", {id:event.point.id});}}},column: {depth: 25,showInLegend: false, dataLabels: {enabled: true,format: '{point.y}'}, events: {legendItemClick: function () {return false;}}}},
       xAxis: {categories: incomeLabels},
       yAxis: {title: {text: null}},
-      series: [{name: 'Income',data: income}]
+      series: [{name: $filter('translate')('income'),data: income}]
     }
     $scope.spendingConfig = {
       chart: {renderTo: 'spending',type: 'column', options3d: {enabled: true,alpha: 10,beta: 20,depth: 50}},
-      title: {text:"Spending"},plotOptions: {series:{cursor:'pointer',events:{click:function(event){$state.go("app.tripdashboard", {id:event.point.id});}}},column: {depth: 25,showInLegend: false, dataLabels: {enabled: true,format: '{point.y}'}, events: {legendItemClick: function () {return false;}}}},
+      title: {text:$filter('translate')('spending')},plotOptions: {series:{cursor:'pointer',events:{click:function(event){$state.go("app.tripdashboard", {id:event.point.id});}}},column: {depth: 25,showInLegend: false, dataLabels: {enabled: true,format: '{point.y}'}, events: {legendItemClick: function () {return false;}}}},
       xAxis: {categories: incomeLabels},
       yAxis: {title: {text: null}},
-      series: [{name: 'Spending',data: spending}]
+      series: [{name: $filter('translate')('spending'),data: spending}]
     }
   }
 })
-.controller('OverallDashboardCtrl', function($scope, $rootScope, $state, $cordovaSQLite, $ionicLoading, MyService) {
+.controller('OverallDashboardCtrl', function($scope, $rootScope, $state, $cordovaSQLite, $ionicLoading, MyService, $filter) {
   var uuid = localStorage.getItem("uuid") || '';
   $rootScope.filters = true;
   $rootScope.monthfilter = false;
   $rootScope.page = "overalldashboard";
-  $scope.title = "Overall Dashboard";
+  $scope.title = "";
   $rootScope.overalldashboardFilters = function() {
      $scope.getTrips();
   }
@@ -107,7 +108,7 @@ angular.module('starter.controllers', ['starter.services'])
       var endrange = $rootScope.filtersData.year +'-12-31';
       var params = {boatid:user.boatid, start:startrange,end:endrange};
       if(uuid && (user.email == 'demo')) params.uuid = "default,"+uuid;
-      $scope.title = $rootScope.filtersData.year +" Dashboard";    
+      $scope.title = $rootScope.filtersData.year;    
       $ionicLoading.show({template:'<ion-spinner icon="lines" class="spinner-calm"></ion-spinner>'});
       var totalmembers = {}
       MyService.getFilteredTrips(params).then(function(trips) {
@@ -160,17 +161,17 @@ angular.module('starter.controllers', ['starter.services'])
     $scope.all = all;
     $scope.allincomeConfig = {
       chart: {renderTo: 'allincome',type: 'line', options3d: {enabled: true,alpha: 10,beta: 20,depth: 50}},
-      title: {text:"Income"},plotOptions: {line: {depth: 25,showInLegend: false, dataLabels: {enabled: true,format: '{point.y}'}, events: {legendItemClick: function () {return false;}}}},
+      title: {text:$filter('translate')('income')},plotOptions: {line: {depth: 25,showInLegend: false, dataLabels: {enabled: true,format: '{point.y}'}, events: {legendItemClick: function () {return false;}}}},
       xAxis: {categories: allmonths},
       yAxis: {title: {text: null}},
-      series: [{name: 'Income',data: allincome}]
+      series: [{name: $filter('translate')('income'),data: allincome}]
     }
     $scope.allspendingConfig = {
       chart: {renderTo: 'allspending',type: 'line', options3d: {enabled: true,alpha: 10,beta: 20,depth: 50}},
-      title: {text:"Spending"},plotOptions: {line: {depth: 25,showInLegend: false, dataLabels: {enabled: true,format: '{point.y}'}, events: {legendItemClick: function () {return false;}}}},
+      title: {text:$filter('translate')('spending')},plotOptions: {line: {depth: 25,showInLegend: false, dataLabels: {enabled: true,format: '{point.y}'}, events: {legendItemClick: function () {return false;}}}},
       xAxis: {categories: allmonths},
       yAxis: {title: {text: null}},
-      series: [{name: 'Spending',data: allspending}]
+      series: [{name: $filter('translate')('spending'),data: allspending}]
     }
   }
 })
@@ -530,7 +531,7 @@ angular.module('starter.controllers', ['starter.services'])
 .controller('AddUserCtrl', function($scope, $state, MyService) {
   $scope.adduser = {};
   $scope.action = "create";
-  $scope.title = "Add User";
+  $scope.title = "adduser";
   $scope.roles = ['worker','captain','vice-captain','cook'];
   $scope.submit = function() {
     var uu = $scope.adduser;
@@ -560,7 +561,7 @@ angular.module('starter.controllers', ['starter.services'])
       index = i;
     }
   }
-  $scope.title = "Edit "+ $scope.adduser.name +" User";
+  $scope.title = "edituser";
   $scope.action = "update";
   $scope.defaultSelect = function(val) {
     return ($scope.adduser.role == val) ? true : false;
@@ -641,8 +642,7 @@ angular.module('starter.controllers', ['starter.services'])
     code: "tn",
     lang: "தமிழ்"
   }]
-  $scope.lang = "en";
-  $scope.choice = "en";
+  $scope.lang = $translate.use();
   $scope.ChangeLanguage = function(lang){
     $translate.use(lang);
   }

@@ -3,12 +3,92 @@ var user = {};
 var filtersData = {};
 var translations = {
   "en": {
+    "bdesc": "Best way to manage your boat",
     "language": "Language",
-    "profile": "Profile"
+    "month": "Month",
+    "year": "Year",    
+    "mdash": "Dashboard",
+    "ydash": "Dashboard",
+    "edash": "Dashboard is empty",
+    "trips": "Trips",
+    "details": "Details",
+    "addtrip": "Add Trip",
+    "users": "Users",
+    "adduser": "Add User",
+    "edituser": "Edit User",
+    "income": "Income",
+    "spending": "Spending",
+    "totalincome": "Total Income",
+    "totalspending": "Total Spending",    
+    "startdate": "Start Date",
+    "enddate": "End Date",
+    "diesel": "Diesel",
+    "ice": "Ice",
+    "net": "Net",
+    "food": "Food",
+    "debt": "Debt",
+    "alldebt": "Total Debt",
+    "ownerp": "Owner %",
+    "workerp": "Worker %",
+    "owneri": "Owner Inocome",
+    "workeri": "Worker Inocome",
+    "balance": "Balance",
+    "bataperday": "Bata/Day",
+    "bata": "Bata",
+    "extra": "Extra",
+    "mfields": "Fill mandatory fields",
+    "profile": "Profile",
+    "name": "Name",
+    "role": "Role",
+    "slevel": "Salary Level",
+    "mobile": "Mobile",
+    "submit": "Submit",
+    "login": "Login",    
+    "logout": "Logout"
   },
   "tn": {
+    "bdesc": "உங்கள் படகு நிர்வகிக்க சிறந்த வழி",
     "language": "மொழி",
-    "profile": "tamil profile"
+    "month": "மாதம்",
+    "year": "வருடம்",
+    "mdash": "மாத விவரங்கள்",
+    "ydash": "வருட விவரங்கள்",
+    "edash": "விவரங்கள் இல்லை",
+    "trips": "ஓட்டுகழ்",
+    "details": "விவரங்கள்",
+    "addtrip": "புது ஓட்",
+    "users": "தொழிலாளிகள்",
+    "adduser": "புதிய தொழிலாளி",
+    "edituser": "தொழிலாளி திருத்தம்",
+    "income": "வருமானம்",
+    "spending": "செலவு",
+    "totalincome": "மொத்த வருமானம்",
+    "totalspending": "மொத்த செலவு",    
+    "startdate": "சென்ற தேதி",
+    "enddate": "வந்த தேதி",
+    "diesel": "டீசல்",
+    "ice": "ஐஸ்",
+    "net": "வலை",
+    "food": "உணவு",
+    "debt": "கடன்",
+    "alldebt": "மொத்த கடன்",
+    "ownerp": "போட்டு பங்கு %",
+    "workerp": "கூலி பங்கு %",
+    "owneri": "போட்டு பங்கு",
+    "workeri": "கூலி பங்கு",
+    "balance": "மீதி",
+    "bataperday": "நாள் பாட்டா",
+    "bata": "பாட்டா",
+    "extra": "இதரசெலவு",
+    "mfields": "கட்டாய விவரங்களை நிரப்ப",
+    "profile": "போட்டு விவரங்கள்",
+    "name": "பெயர்",
+    "role": "பங்கு தரம்",
+    "slevel": "பங்கு",
+    "mobile": "மொபைல்",
+    "login": "உள்நுழைய",
+    "submit": "சேவ்",
+    "logout": "வெளியேறு"
   }
 }
 //var db = '';
@@ -128,7 +208,7 @@ angular.module('starter', ['ionic', 'ngCordova', 'pascalprecht.translate', 'ioni
     $translateProvider.translations(lang, translations[lang]);
   }
   
-  $translateProvider.preferredLanguage('en');
+  $translateProvider.preferredLanguage('tn');
 
   $stateProvider
   .state('app', {
