@@ -304,7 +304,7 @@ angular.module('starter.controllers', ['starter.services'])
        templateUrl: 'templates/errors.html'
       });
       alertPopup.then(function(res) {
-       console.log('Thank you for not eating my delicious ice cream cone');
+       console.log('Errors alerted');
       });
     } else {
       if(!tripdetails.diesel) tripdetails.diesel = 0;
@@ -439,8 +439,15 @@ angular.module('starter.controllers', ['starter.services'])
       err.push($filter('translate')('debtmore').replace("!val", tripdetails.remainingdebt));
     }
     if(err.length > 0) {
-      //err = err.substring(0, err.length - 5);
-      alert("err");
+      $scope.errors = err;
+      var alertPopup = $ionicPopup.alert({
+       title: $filter('translate')('errors'),
+       scope:$scope,
+       templateUrl: 'templates/errors.html'
+      });
+      alertPopup.then(function(res) {
+       console.log('Errors alerted');
+      });
     } else {
       if(!tripdetails.diesel) tripdetails.diesel = 0;
       if(!tripdetails.ice) tripdetails.ice = 0;
