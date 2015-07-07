@@ -395,7 +395,6 @@ angular.module('starter.controllers', ['starter.services'])
   $scope.removeExtra = function(index) {
     $scope.addtrip.extra.splice(index, 1);
   }
-  var lastDebt = 0;
   if(MyService.online()) {
     $ionicLoading.show({template:'<ion-spinner icon="lines" class="spinner-calm"></ion-spinner>'});
     MyService.getTrip({boatid:user.boatid,id:$stateParams.id}).then(function(trip) {
@@ -405,7 +404,7 @@ angular.module('starter.controllers', ['starter.services'])
       }
       trip.startdate = new Date(trip.startdate);
       trip.enddate = new Date(trip.enddate);
-      trip.remainingdebt = user.debt;
+      trip.remainingdebt = user.debt + trip.debttaken;
       if(!trip.debttaken) trip.debttaken = 0;
       trip.lastDebt = trip.debttaken;
       if(trip.extra.length == 0) trip.extra = [{name:'',price:''}];
@@ -486,7 +485,8 @@ angular.module('starter.controllers', ['starter.services'])
       tripdetails.extratotal = extra;
       tripdetails.totalspending = tripdetails.diesel + tripdetails.ice + tripdetails.net + tripdetails.food + extra + tripdetails.bata;
       tripdetails.balance = parseInt((tripdetails.income - tripdetails.totalspending).toFixed(2));
-      tripdetails.debt = user.debt;
+      tripdetails.debt = tripdetails.remainingdebt;
+      console.log("Remaining total", tripdetails.remainingdebt);
       if(tripdetails.balance < 0) {
         if(tripdetails.debttaken == 0) {
           tripdetails.debt = tripdetails.remainingdebt + (-(tripdetails.balance));
@@ -496,10 +496,10 @@ angular.module('starter.controllers', ['starter.services'])
       } else {
         if(tripdetails.debttaken > 0) {
           tripdetails.balance = tripdetails.balance - tripdetails.debttaken;
-          if(user.debt == 0) {
+          if(tripdetails.remainingdebt == 0) {
             tripdetails.debt = tripdetails.lastDebt - tripdetails.debttaken;
           } else {
-            tripdetails.debt = user.debt + (tripdetails.lastDebt - tripdetails.debttaken);
+            tripdetails.debt = tripdetails.remainingdebt - tripdetails.debttaken;
           }
         }
       }

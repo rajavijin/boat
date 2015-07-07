@@ -37,7 +37,7 @@ exports.trips = function(req, res) {
 // Get trips
 exports.alltrips = function(req, res) {
   console.log("requested", req.params);
-  var params = {boatid: req.params.boatid,startdate:{$gte:req.params.start,$lte:req.params.end}};
+  var params = {boatid: req.params.boatid,tripdate:{$gte:req.params.start,$lte:req.params.end}};
   if(req.params.uuid == "undefined") {delete req.params.uuid;}
   else {var uuids = req.params.uuid.split(",");params.uuid = {$in:uuids};}
   console.log("params", params);

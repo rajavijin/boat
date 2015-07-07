@@ -237,7 +237,7 @@ angular.module('starter', ['ionic', 'ngCordova', 'pascalprecht.translate', 'ioni
     $translateProvider.translations(lang, translations[lang]);
   }
   
-  $translateProvider.preferredLanguage('tn');
+  $translateProvider.preferredLanguage('en');
 
   $stateProvider
   .state('app', {
