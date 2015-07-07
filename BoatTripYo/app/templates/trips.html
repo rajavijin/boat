@@ -11,7 +11,7 @@
    <ion-content class="has-header">
       <ion-refresher pulling-text="Pull to refresh" on-refresh="getTrips()"></ion-refresher>
       <ion-list ng-hide="tripsFound">
-         <ion-item class="item item-icon-left"><i class="icon ion-ios-list positive"></i>No Trips Added Yet</item>
+         <ion-item class="item item-icon-left"><i class="icon ion-ios-list positive"></i><h2 translate="ntrips">No Trips Added Yet</h2></item>
       </ion-list>
    	  <div ng-if="filterStatus" style="height:44px;"></div>
       <ion-list ng-if="tripsFound">

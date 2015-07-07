@@ -2,7 +2,7 @@
    <ion-nav-title>{{title | translate}}</ion-nav-title>
 <ion-content>
 <form name="adduserForm" novalidate>
-    <ion-list>
+    <ion-list class="adduser">
       <label class="item item-input item-icon-left" ng-class="{ 'has-errors' : adduserForm.name.$invalid, 'no-errors' : adduserForm.name.$valid}">
         <i class="icon ion-man positive"></i>
         <span class="input-label" translate="name">Name</span>

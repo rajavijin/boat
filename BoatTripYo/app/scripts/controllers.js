@@ -100,8 +100,6 @@ angular.module('starter.controllers', ['starter.services'])
     localStorage.setItem("filtersData", JSON.stringify($rootScope.filtersData));
   }
   $scope.getTrips = function() {
-    var storedFilters = localStorage.getItem("filtersData") || '';
-    if(storedFilters) $rootScope.filtersData = JSON.parse(storedFilters);
     if(Object.keys($rootScope.filtersData.years).length == 0) {
       $scope.dashboardStatus = "empty";
       $rootScope.filters = false;
@@ -200,7 +198,7 @@ angular.module('starter.controllers', ['starter.services'])
     }
   }
 })
-.controller('TripDashboardCtrl', function($scope, $rootScope, $state, $cordovaSQLite, $ionicPopup, $stateParams, MyService, $ionicLoading) {
+.controller('TripDashboardCtrl', function($scope, $rootScope, $state, $filter, $cordovaSQLite, $ionicPopup, $stateParams, MyService, $ionicLoading) {
   $scope.currentuser = user;
   $scope.editTrip = function() {
     $state.go('app.edittrip', {id:$stateParams.id}, {reload:true});
@@ -208,20 +206,19 @@ angular.module('starter.controllers', ['starter.services'])
   $scope.deleteTrip = function() {
     var confirmPopup = $ionicPopup.confirm({
      title: $scope.trip.name,
-     template: 'Are you sure you want to delete this Trip?'
+     template: $filter('translate')('dtrip')
     });
     confirmPopup.then(function(res) {
      if(res) {
       if(MyService.online()) {
-        MyService.deleteTrip({id:$stateParams.id}).then(function(deleted) {
-          console.log("deleted", deleted);
-          var tripdate = $scope.trip.tripdate.split("-");
-          console.log("tripdate", tripdate);
-          console.log("filters data", $rootScope.filtersData);
-          /*if(Object.keys($rootScope.filtersData[tripdate[0]][tripdate[1]]).length == 1) {
-            delete $rootScope.filtersData[tripdate[0]][tripdate[1]];
-            localStorage.setItem("filtersData", JSON.stringify($rootScope.filtersData));
-          }*/
+        var debtupdated = user.debt + $scope.trip.debttaken;
+        if($scope.trip.balance < 0){
+          var debtupdated = user.debt + $scope.trip.balance;
+        }
+        
+        MyService.deleteTrip({id:$stateParams.id,debt:debtupdated,boatid:user.boatid}).then(function(deleted) {
+          user.debt = debtupdated;
+          localStorage.setItem("user", JSON.stringify(user));
           $state.go('app.dashboard', {}, {reload:true});
         })
       }
@@ -252,7 +249,7 @@ angular.module('starter.controllers', ['starter.services'])
     }
   }
 })
-.controller('AddtripCtrl', function($scope, $rootScope, $state, $filter, $ionicSideMenuDelegate, $cordovaSQLite, $window, MyService) {
+.controller('AddtripCtrl', function($scope, $rootScope, $state, $filter, $ionicSideMenuDelegate, $cordovaSQLite, $window, MyService, $ionicPopup) {
   var user = JSON.parse(localStorage.getItem("user"));
   console.log("user", user);
   $ionicSideMenuDelegate.$getByHandle('right-menu').canDragContent(false);
@@ -263,6 +260,8 @@ angular.module('starter.controllers', ['starter.services'])
   addtrip.workerp = user.workerpercentage;
   addtrip.bataperday = user.bataperday;
   addtrip.debttaken = user.debt;
+  addtrip.remainingdebt = user.debt;
+  addtrip.lastDept = user.debt;
   addtrip.startdate = new Date();
   addtrip.enddate = new Date();
   addtrip.extra = [{name:'',price:''}];
@@ -270,7 +269,7 @@ angular.module('starter.controllers', ['starter.services'])
   addtrip.uuid = localStorage.getItem("uuid");
   $scope.addtrip = addtrip;
   $scope.members = user.members;
-  $scope.title = "Add Trip";
+  $scope.title = $filter('translate')('addtrip');
   $scope.createExtra = function() {
     $scope.addtrip.extra.push({name:'',price:''});
   }
@@ -278,25 +277,35 @@ angular.module('starter.controllers', ['starter.services'])
     $scope.addtrip.extra.splice(index, 1);
   }
   $scope.submit = function() {
-    var err = '';
+    var err = [];
     var tripdetails = $scope.addtrip;
     tripdetails.tripdate = moment(tripdetails.startdate).format("YYYY-MM-DD");
     if(MyService.isFutureDate(tripdetails.tripdate)) {
-      err += "Start Date cant be in Future and ";
+      err.push($filter('translate')('sdfuture'));
     }
     if(MyService.isFutureDate(moment(tripdetails.enddate).format("YYYY-MM-DD"))) {
-      err += "End Date cant be in Future and ";
+      err.push($filter('translate')('edfuture'));
     }
     var totalDays = parseInt(moment(tripdetails.enddate).diff(moment(tripdetails.startdate))/(86400*1000));
     if(totalDays == 0) {
-      err += "Start Date and End Date cant be same and ";
+      err.push($filter('translate')('dsame'));
     } else if (totalDays < 0) {
-      err += "End Date cant be less than Start Date and ";
+      err.push($filter('translate')('edless'));
     }
-    if(Object.keys(tripdetails.allmembers).length == 0) err += "Please Select members and ";
-    if(err) {
-      err = err.substring(0, err.length - 5);
-      alert(err);
+    if(Object.keys(tripdetails.allmembers).length == 0) err.push($filter('translate')('smembers'));
+    if(tripdetails.debttaken > tripdetails.remainingdebt) {
+      err.push($filter('translate')('debtmore').replace("!val", tripdetails.remainingdebt));
+    }
+    if(err.length > 0) {
+      $scope.errors = err;
+      var alertPopup = $ionicPopup.alert({
+       title: 'Errors',
+       scope:$scope,
+       templateUrl: 'templates/errors.html'
+      });
+      alertPopup.then(function(res) {
+       console.log('Thank you for not eating my delicious ice cream cone');
+      });
     } else {
       if(!tripdetails.diesel) tripdetails.diesel = 0;
       if(!tripdetails.ice) tripdetails.ice = 0;
@@ -339,14 +348,14 @@ angular.module('starter.controllers', ['starter.services'])
 
       if(tripdetails.balance < 0) {
         if(tripdetails.debttaken == 0) {
-          tripdetails.debt = -(tripdetails.balance);
+          tripdetails.debt = tripdetails.remainingdebt + (-(tripdetails.balance));
         } else {
-          tripdetails.debt = tripdetails.debttaken + (-(tripdetails.balance));
+          tripdetails.debt = (tripdetails.remainingdebt - tripdetails.debttaken) + (-(tripdetails.balance));
         }
       } else {
         if(tripdetails.debttaken > 0) {
           tripdetails.balance = tripdetails.balance - tripdetails.debttaken;
-          tripdetails.debt = user.debt - tripdetails.debttaken;
+          tripdetails.debt = tripdetails.remainingdebt - tripdetails.debttaken;
         }
       }
       user.debt = tripdetails.debt;
@@ -395,10 +404,11 @@ angular.module('starter.controllers', ['starter.services'])
       }
       trip.startdate = new Date(trip.startdate);
       trip.enddate = new Date(trip.enddate);
-      lastDebt = trip.debttaken;
+      trip.remainingdebt = user.debt;
+      trip.lastDebt = trip.debttaken;
       if(trip.extra.length == 0) trip.extra = [{name:'',price:''}];
       $scope.addtrip = trip;
-      $scope.title = "Edit "+ trip.name;
+      $scope.title = $filter('translate')('edit')+" "+ trip.name;
     },function(err) {
       console.log("error", err);
     }).finally(function() {$ionicLoading.hide();})
@@ -408,25 +418,27 @@ angular.module('starter.controllers', ['starter.services'])
 
   $scope.submit = function() {
     var tripdetails =$scope.addtrip;
-    var err = '';
-    var tripdetails = $scope.addtrip;
+    var err = [];
     tripdetails.tripdate = moment(tripdetails.startdate).format("YYYY-MM-DD");
     if(MyService.isFutureDate(tripdetails.tripdate)) {
-      err += "Start Date cant be in Future and ";
+      err.push($filter('translate')('sdfuture'));
     }
     if(MyService.isFutureDate(moment(tripdetails.enddate).format("YYYY-MM-DD"))) {
-      err += "End Date cant be in Future and ";
+      err.push($filter('translate')('edfuture'));
     }
     var totalDays = parseInt(moment(tripdetails.enddate).diff(moment(tripdetails.startdate))/(86400*1000));
     if(totalDays == 0) {
-      err += "Start Date and End Date cant be same and ";
+      err.push($filter('translate')('dsame'));
     } else if (totalDays < 0) {
-      err += "End Date cant be less than Start Date and ";
+      err.push($filter('translate')('edless'));
     }
-    if(Object.keys(tripdetails.allmembers).length == 0) err += "Please Select members and ";
-    if(err) {
-      err = err.substring(0, err.length - 5);
-      alert(err);
+    if(Object.keys(tripdetails.allmembers).length == 0) err.push($filter('translate')('smembers'));
+    if(tripdetails.debttaken > tripdetails.remainingdebt) {
+      err.push($filter('translate')('debtmore').replace("!val", tripdetails.remainingdebt));
+    }
+    if(err.length > 0) {
+      //err = err.substring(0, err.length - 5);
+      alert("err");
     } else {
       if(!tripdetails.diesel) tripdetails.diesel = 0;
       if(!tripdetails.ice) tripdetails.ice = 0;
@@ -465,20 +477,20 @@ angular.module('starter.controllers', ['starter.services'])
       tripdetails.extratotal = extra;
       tripdetails.totalspending = tripdetails.diesel + tripdetails.ice + tripdetails.net + tripdetails.food + extra + tripdetails.bata;
       tripdetails.balance = parseInt((tripdetails.income - tripdetails.totalspending).toFixed(2));
-      console.log("Edit user", user);
+
       if(tripdetails.balance < 0) {
         if(tripdetails.debttaken == 0) {
-          tripdetails.debt = -(tripdetails.balance);
+          tripdetails.debt = tripdetails.remainingdebt + (-(tripdetails.balance));
         } else {
-          tripdetails.debt = tripdetails.debttaken + (-(tripdetails.balance));
+          tripdetails.debt = (tripdetails.remainingdebt - tripdetails.debttaken) + (-(tripdetails.balance));
         }
       } else {
         if(tripdetails.debttaken > 0) {
           tripdetails.balance = tripdetails.balance - tripdetails.debttaken;
           if(user.debt == 0) {
-            tripdetails.debt = lastDebt - tripdetails.debttaken;
+            tripdetails.debt = tripdetails.lastDebt - tripdetails.debttaken;
           } else {
-            tripdetails.debt = user.debt - tripdetails.debttaken;
+            tripdetails.debt = user.debt + (tripdetails.lastDebt - tripdetails.debttaken);
           }
         }
       }
@@ -651,6 +663,10 @@ angular.module('starter.controllers', ['starter.services'])
     $translate.use(lang);
   }
   $scope.getProfile = function() {
+    var suser = localStorage.getItem("user");
+    if(suser) {
+      user = JSON.parse(suser);
+    }
     $scope.user = user;
   }
 })

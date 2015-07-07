@@ -2,7 +2,7 @@
 <ion-nav-title>{{title}}</ion-nav-title>
 <ion-content>
   <form name="addtripForm" novalidate>
-    <ion-list>
+    <ion-list class="addtrip">
       <label class="item item-input item-icon-left" ng-class="{ 'has-errors' : addtripForm.startdate.$invalid, 'no-errors' : addtripForm.startdate.$valid}">
         <i class="icon ion-ios-calendar-outline positive"></i>
         <span class="input-label" translate="startdate">Start Date</span>
@@ -38,7 +38,7 @@
     <span class="input-label" translate="food">Food</span>
     <input type="number" ng-model="addtrip.food">
   </label>
-  <label class="item item-input item-icon-left" ng-if="addtrip.debttaken > 0">
+  <label class="item item-input item-icon-left" ng-if="addtrip.remainingdebt || addtrip.lastDebt">
     <i class="icon ion-cash positive"></i>
     <span class="input-label" translate="debt">Debt</span>
     <input type="number" ng-model="addtrip.debttaken">

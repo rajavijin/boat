@@ -18,31 +18,31 @@
         <ion-item nav-clear class="center menu-logo"><h2><i class="icon ion-android-boat positive" style="font-size:60px"></i></h2><h2>Welcome {{currentuser.name}}</h2></ion-item>
         <ion-item menu-close class="item-icon-left" href="#/app/dashboard">
         <i class="icon ion-stats-bars positive"></i>
-        <b translate="mdash">Dashboard</b>
+        <h2 translate="mdash">Dashboard</h2>
         </ion-item>
         <ion-item menu-close class="item-icon-left" href="#/app/overalldashboard">
         <i class="icon ion-ios-pulse-strong positive"></i>
-        <b translate="ydash">Overall Dashboard</b>
+        <h2 translate="ydash">Overall Dashboard</h2>
         </ion-item>        
         <ion-item menu-close class="item-icon-left" href="#/app/addtrip">
         <i class="icon ion-compose positive"></i>
-        <b translate="addtrip">Add trip</b>
+        <h2 translate="addtrip">Add trip</h2>
         </ion-item>
         <ion-item menu-close class="item-icon-left" href="#/app/trips">
         <i class="icon ion-android-boat positive"></i>
-        <b translate="trips">Trips</b>
+        <h2 translate="trips">Trips</h2>
         </ion-item>
         <ion-item menu-close class="item-icon-left" href="#/app/users">
         <i class="icon ion-ios-people positive"></i>
-        <b translate="users">Users</b>
+        <h2 translate="users">Users</h2>
         </ion-item>              
         <ion-item ng-if="currentuser.email != 'demo'" menu-close class="item-icon-left" href="#/app/adduser">
         <i class="icon ion-person-add positive"></i>
-        <b translate="adduser">Add user</b>
+        <h2 translate="adduser">Add user</h2>
         </ion-item>        
         <ion-item menu-close class="item-icon-left" href="#/app/profile">
         <i class="icon ion-gear-b positive"></i>
-        <b translate="profile">Profile</b>
+        <h2 translate="profile">Profile</h2>
         </ion-item>
         <ion-item menu-close class="item-icon-left" href="#/logout">
           <i class="icon ion-log-out positive"></i>
@@ -59,7 +59,7 @@
             <ion-radio class="item item-complex" name="year" ng-model="filtersData.year" ng-repeat="(yk,yeark) in filtersData.years" ng-value="{{yk}}">{{yk}}</ion-radio>
             <ion-item ng-if="monthfilter" class="item-icon-left positive"><i class="icon ion-ios-calendar-outline"></i><strong translate="month">Month</strong></ion-item>
             <ion-radio ng-if="monthfilter" class="item item-complex" name="month" ng-model="filtersData.month" ng-repeat="(mk,monthv) in filtersData.years[filtersData.year]" ng-value="{{mk}}">{{monthv}}</ion-radio>
-            <ion-item ng-if="page == 'dashboard'" class="item submit first"><button menu-close class="button icon-left ion-chevron-left button-block button-positive" ng-click="dashboardFilters()">Go</button></ion-item>
+            <ion-item ng-if="page == 'dashboard'" class="item submit first"><button menu-close class="button button-positive button-block icon-left ion-chevron-left" ng-click="dashboardFilters()">Go</button></ion-item>
             <ion-item ng-if="page == 'overalldashboard'" class="item submit first"><button menu-close class="button icon-left ion-chevron-left button-block button-positive" ng-click="overalldashboardFilters()">Go</button></ion-item>            
           </ion-list>
        </form>

@@ -1,6 +1,5 @@
 angular.module('starter.services', [])
 .factory('MyService', function($rootScope, $ionicLoading, $ionicPopup, $state, $http, $q) {
-  var baseUrl = 'http://52.25.97.15:9000/api';
   var baseUrl = 'http://localhost:8100/api';
   var loginEndpoint       = baseUrl +'/users/verify';
   var logoutEndpoint       = baseUrl +'/users/';
@@ -136,7 +135,7 @@ angular.module('starter.services', [])
     },
     deleteTrip: function(trip) {
       var defer = $q.defer();
-      $http.delete(baseUrl+'/trip/'+trip.id)
+      $http.delete(baseUrl+'/trip/'+trip.id+'/'+trip.boatid+'/'+trip.debt)
       .success(function(data, status, headers, config){
         defer.resolve(data);
       }).error(function(data, status, headers, config){

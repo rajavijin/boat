@@ -106,12 +106,21 @@ exports.update = function(req, res) {
 
 // Deletes a trip from the DB.
 exports.destroy = function(req, res) {
-  Trip.findById(req.params.id, function (err, trip) {
-    if(err) { return handleError(res, err); }
-    if(!trip) { return res.send(404); }
-    trip.remove(function(err) {
-      if(err) { return handleError(res, err); }
-      return res.send(204);
+  Boat.findById(req.params.boatid, function (boaterr, boat) {
+    if (boaterr) { return handleError(res, boaterr); }
+    if(!boat) { return res.send(404); }
+    var bupdateVal = {debt:req.params.debt};
+    var bupdated = _.merge(boat, bupdateVal);
+    bupdated.save(function (boaterr) {
+      if (boaterr) { return handleError(res, boaterr); }
+      Trip.findById(req.params.id, function (err, trip) {
+        if(err) { return handleError(res, err); }
+        if(!trip) { return res.send(404); }
+        trip.remove(function(err) {
+          if(err) { return handleError(res, err); }
+          return res.send(204);
+        });
+      });
     });
   });
 };
