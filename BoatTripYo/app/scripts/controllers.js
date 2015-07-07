@@ -38,6 +38,7 @@ angular.module('starter.controllers', ['starter.services'])
     if(!$rootScope.filtersData.years[$rootScope.filtersData.year][fmonth]) {
       alert("Please select a month");
     } else {
+      localStorage.setItem("filtersData", JSON.stringify($rootScope.filtersData));
       $scope.getTrips();
     }
   }
@@ -95,7 +96,8 @@ angular.module('starter.controllers', ['starter.services'])
   $rootScope.page = "overalldashboard";
   $scope.title = "";
   $rootScope.overalldashboardFilters = function() {
-     $scope.getTrips();
+    $scope.getTrips();
+    localStorage.setItem("filtersData", JSON.stringify($rootScope.filtersData));
   }
   $scope.getTrips = function() {
     var storedFilters = localStorage.getItem("filtersData") || '';
@@ -264,6 +266,7 @@ angular.module('starter.controllers', ['starter.services'])
   addtrip.startdate = new Date();
   addtrip.enddate = new Date();
   addtrip.extra = [{name:'',price:''}];
+  addtrip.allmembers = {};
   addtrip.uuid = localStorage.getItem("uuid");
   $scope.addtrip = addtrip;
   $scope.members = user.members;
@@ -290,7 +293,7 @@ angular.module('starter.controllers', ['starter.services'])
     } else if (totalDays < 0) {
       err += "End Date cant be less than Start Date and ";
     }
-    if(!tripdetails.allmembers) err += "Please Select members and ";
+    if(Object.keys(tripdetails.allmembers).length == 0) err += "Please Select members and ";
     if(err) {
       err = err.substring(0, err.length - 5);
       alert(err);
@@ -393,6 +396,7 @@ angular.module('starter.controllers', ['starter.services'])
       trip.startdate = new Date(trip.startdate);
       trip.enddate = new Date(trip.enddate);
       lastDebt = trip.debttaken;
+      if(trip.extra.length == 0) trip.extra = [{name:'',price:''}];
       $scope.addtrip = trip;
       $scope.title = "Edit "+ trip.name;
     },function(err) {
@@ -419,7 +423,7 @@ angular.module('starter.controllers', ['starter.services'])
     } else if (totalDays < 0) {
       err += "End Date cant be less than Start Date and ";
     }
-    if(!tripdetails.allmembers) err += "Please Select members and ";
+    if(Object.keys(tripdetails.allmembers).length == 0) err += "Please Select members and ";
     if(err) {
       err = err.substring(0, err.length - 5);
       alert(err);

@@ -75,19 +75,24 @@ exports.update = function(req, res) {
   Trip.findById(req.params.id, function (err, trip) {
     if (err) { return handleError(res, err); }
     if(!trip) { return res.send(404); }
-    console.log("requested", req.body);
-    trip.members = [];
-    trip.extra = [];
     var updated = _.merge(trip, req.body);
+    updated.extra = [];
+    for (var i = 0; i < req.body.extra.length; i++) {
+      updated.extra.push(req.body.extra[i]);
+    }
+    updated.members = [];
+    for (var mi = 0; mi < req.body.members.length; mi++) {
+      updated.members.push(req.body.members[mi]);
+    }
     updated.save(function (err) {
       if (err) { return handleError(res, err); }
       if((req.body.debt > 0) || (req.body.debttaken > 0)) {
         Boat.findById(req.body.boatid, function (boaterr, boat) {
           if (boaterr) { return handleError(res, boaterr); }
           if(!boat) { return res.send(404); }
-          var updateVal = {debt:req.body.debt};
-          var updated = _.merge(boat, updateVal);
-          updated.save(function (boaterr) {
+          var bupdateVal = {debt:req.body.debt};
+          var bupdated = _.merge(boat, bupdateVal);
+          bupdated.save(function (boaterr) {
             if (boaterr) { return handleError(res, boaterr); }
             return res.json(200, trip);
           });

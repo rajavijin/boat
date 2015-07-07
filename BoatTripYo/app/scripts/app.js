@@ -85,7 +85,7 @@ var translations = {
     "name": "பெயர்",
     "role": "பங்கு தரம்",
     "slevel": "பங்கு",
-    "mobile": "மொபைல்",
+    "mobile": "மொபைல்",
     "login": "உள்நுழைய",
     "submit": "சேவ்",
     "logout": "வெளியேறு"
