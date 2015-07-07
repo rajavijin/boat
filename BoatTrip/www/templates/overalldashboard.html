@@ -1,1 +1,26 @@
-<ion-view cache-view="false" ng-init="getTrips()"><ion-nav-title>{{title}} {{'ydash' | translate}}</ion-nav-title><ion-content class="has-header"><ion-refresher pulling-text="Pull to refresh" on-refresh="getTrips()"></ion-refresher><ion-list ng-if="dashboardStatus == 'empty'"><ion-item class="item item-icon-left"><i class="icon ion-ios-list positive"></i>Dashboard is empty</ion-item></ion-list><chart id="allincome" config="allincomeConfig" ng-if="dashboardStatus != 'empty'"></chart><div class="padding"></div><chart id="allspending" config="allspendingConfig" ng-if="dashboardStatus != 'empty'"></chart><ion-list ng-if="dashboardStatus != 'empty'"><ion-item class="item item-icon-left" href="#"><i class="icon ion-plus-circled positive"></i><h2 translate="totalincome">Income</h2><span class="badge badge-positive">{{all.income.total}}</span></ion-item><ion-item class="item item-icon-left" href="#"><i class="icon ion-plus-circled positive"></i><h2 translate="totalspending">Spending</h2><span class="badge badge-positive">{{all.spending.total}}</span></ion-item><ion-item class="item item-icon-left" href="#" ng-repeat="allv in all.members | orderBy:['-total']"><i class="icon ion-person positive"></i><h2>{{allv.name}}</h2><span class="badge badge-positive">{{allv.total}}</span></ion-item></ion-list></ion-content></ion-view>
+<ion-view cache-view="false" ng-init="getTrips()">
+   <ion-nav-title>{{title}} {{'ydash' | translate}}</ion-nav-title>
+   <ion-content class="has-header">
+      <ion-refresher pulling-text="Pull to refresh" on-refresh="getTrips()"></ion-refresher>
+      <ion-list ng-if="dashboardStatus == 'empty'">
+         <ion-item class="item item-icon-left"><i class="icon ion-ios-list positive"></i><h2 translate="dempty">Dashboard is empty</h2></ion-item>
+      </ion-list>
+      <chart id="allincome" config="allincomeConfig" ng-if="dashboardStatus != 'empty'"></chart>
+      <div class="padding"></div>
+      <chart id="allspending" config="allspendingConfig" ng-if="dashboardStatus != 'empty'"></chart>
+      <ion-list ng-if="dashboardStatus != 'empty'">
+        <ion-item class="item item-icon-left" href="#">
+          <i class="icon ion-plus-circled positive"></i>
+          <h2 translate="totalincome">Income</h2><span class="badge badge-positive">{{all.income.total}}</span>
+        </ion-item>
+        <ion-item class="item item-icon-left" href="#">
+          <i class="icon ion-plus-circled positive"></i>
+          <h2 translate="totalspending">Spending</h2><span class="badge badge-positive">{{all.spending.total}}</span>
+        </ion-item> 
+        <ion-item class="item item-icon-left" href="#" ng-repeat="allv in all.members | orderBy:['-total']">
+          <i class="icon ion-person positive"></i>
+          <h2>{{allv.name}}</h2><span class="badge badge-positive">{{allv.total}}</span>
+        </ion-item> 
+      </div>
+   </ion-content>
+</ion-view>

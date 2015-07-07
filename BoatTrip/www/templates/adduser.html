@@ -1,7 +1,48 @@
-<ion-view><ion-nav-title>{{title | translate}}</ion-nav-title><ion-content><form name="adduserForm" novalidate><ion-list class="adduser"><label class="item item-input item-icon-left" ng-class="{ 'has-errors' : adduserForm.name.$invalid, 'no-errors' : adduserForm.name.$valid}"><i class="icon ion-man positive"></i> <span class="input-label" translate="name">Name</span> <input name="name" type="text" ng-model="adduser.name" required></label><!-- <div class="list">
+<ion-view cache-view="false">
+   <ion-nav-title>{{title | translate}}</ion-nav-title>
+<ion-content>
+<form name="adduserForm" novalidate>
+    <ion-list class="adduser">
+      <label class="item item-input item-icon-left" ng-class="{ 'has-errors' : adduserForm.name.$invalid, 'no-errors' : adduserForm.name.$valid}">
+        <i class="icon ion-man positive"></i>
+        <span class="input-label" translate="name">Name</span>
+        <input name="name" type="text" ng-model="adduser.name" required>
+      </label>
+<!-- <div class="list">
   <label class="item item-input">
     <span class="input-label">Name</span>
     <input type="text" ng-model="adduser.name">
-  </label> --><label class="item item-input item-icon-left item-select" ng-class="{ 'has-errors' : adduserForm.role.$invalid, 'no-errors' : adduserForm.role.$valid}"><i class="icon ion-ribbon-a positive"></i> <span class="input-label" translate="role">Role</span><select name="role" ng-model="adduser.role" required><option ng-selected="defaultSelect(role)" ng-repeat="(k,role) in roles">{{role}}</select></label><label class="item item-input item-icon-left" ng-class="{ 'has-errors' : adduserForm.salarylevel.$invalid, 'no-errors' : adduserForm.salarylevel.$valid}"><i class="icon ion-social-usd-outline positive"></i> <span class="input-label" translate="slevel">Salary Level</span> <input name="salarylevel" type="number" ng-model="adduser.salarylevel" placeholder="eg: 0.5" required></label><label class="item item-input item-icon-left" ng-if="action == 'create'" ng-class="{ 'has-errors' : adduserForm.email.$invalid, 'no-errors' : adduserForm.email.$valid}"><i class="icon ion-iphone positive"></i> <span class="input-label" translate="mobile">Mobile</span> <input name="email" type="text" ng-model="adduser.email" required></label><label class="item item-input item-icon-left" ng-if="action == 'update'" ng-class="{ 'has-errors' : adduserForm.mobile.$invalid, 'no-errors' : adduserForm.mobile.$valid}"><i class="icon ion-iphone positive"></i> <span class="input-label" translate="mobile">Mobile</span> <input name="mobile" type="text" ng-model="adduser.mobile"></label><!--   <label class="item item-input">
+  </label> -->
+  <label class="item item-input item-icon-left item-select" ng-class="{ 'has-errors' : adduserForm.role.$invalid, 'no-errors' : adduserForm.role.$valid}">
+    <i class="icon ion-ribbon-a positive"></i>
+    <span class="input-label" translate="role">Role</span>
+    <select name="role" ng-model="adduser.role" required>
+      <option ng-selected="defaultSelect(role)" ng-repeat="(k,role) in roles">{{role}}</option>
+    </select>
+  </label>  
+  <label class="item item-input item-icon-left" ng-class="{ 'has-errors' : adduserForm.salarylevel.$invalid, 'no-errors' : adduserForm.salarylevel.$valid}">
+    <i class="icon ion-social-usd-outline positive"></i>
+    <span class="input-label" translate="slevel">Salary Level</span>
+    <input name="salarylevel" type="number" ng-model="adduser.salarylevel" placeholder="eg: 0.5" required>
+  </label>
+  <label class="item item-input item-icon-left" ng-if="action == 'create'" ng-class="{ 'has-errors' : adduserForm.email.$invalid, 'no-errors' : adduserForm.email.$valid}">
+    <i class="icon ion-iphone positive"></i>
+    <span class="input-label" translate="mobile">Mobile</span>
+    <input name="email" type="text" ng-model="adduser.email" required>
+  </label>  
+  <label class="item item-input item-icon-left" ng-if="action == 'update'"  ng-class="{ 'has-errors' : adduserForm.mobile.$invalid, 'no-errors' : adduserForm.mobile.$valid}">
+    <i class="icon ion-iphone positive"></i>
+    <span class="input-label" translate="mobile">Mobile</span>
+    <input name="mobile" type="text" ng-model="adduser.mobile">
+  </label>    
+<!--   <label class="item item-input">
     <textarea placeholder="Address" ng-model="adduser.mobile"></textarea>
-  </label>    --></ion-list></form><div class="padding"><button ng-click="submit()" ng-show="adduserForm.$invalid" class="button button-positive button-block" ng-disabled="adduserForm.$invalid">{{"mfields" | translate}}</button> <button ng-click="submit()" ng-hide="adduserForm.$invalid" class="button button-positive button-block">{{"submit" | translate}}</button></div></ion-content></ion-view>
+  </label>    -->
+ </ion-list>
+ </form>
+   <div class="padding">
+    <button ng-click="submit()" ng-show="adduserForm.$invalid" class="button button-positive button-block" ng-disabled="adduserForm.$invalid">{{"mfields" | translate}}</button>
+    <button ng-click="submit()" ng-hide="adduserForm.$invalid" class="button button-positive button-block">{{"submit" | translate}}</button>    
+  </div>
+ </ion-content>
+</ion-view>

@@ -1,1 +1,32 @@
-<ion-view cache-view="false" title="{{ 'profile' | translate }}" ng-init="getProfile()"><ion-content><ion-list><ion-item class="item item-icon-left"><i class="icon ion-person positive"></i><h2>{{user.name}}</h2></ion-item><ion-item class="item item-icon-left"><i class="icon ion-android-boat positive"></i><h2>{{user.boatname}}</h2></ion-item><ion-item class="item item-icon-left" ng-if="currentuser.email != 'demo'"><i class="icon ion-ios-telephone positive"></i><h2>{{user.email}}</h2></ion-item><ion-item class="item-icon-left positive"><i class="icon ion-ios-flag"></i><strong translate="language">Language</strong></ion-item><ion-radio class="item item-complex item-icon-left item-icon-right" ng-click="ChangeLanguage('{{l.code}}')" ng-value="'{{l.code}}'" ng-model="lang" ng-repeat="l in languages"><i class="icon ion-ios-flag-outline positive"></i><h2>{{l.lang}}</h2></ion-radio><!--     <ion-radio ng-model="choice" ng-repeat="l in languages" ng-value="'{{l.code}}'">{{l.lang}}</ion-radio> --></ion-list></ion-content></ion-view>
+<ion-view cache-view="false" title="{{ 'profile' | translate }}" ng-init="getProfile()">
+  <ion-content>
+  <ion-list>
+    <ion-item class="item item-icon-left">
+    <i class="icon ion-person positive"></i>
+    <h2 translate="owner">Owner</h2>
+    <span class="badge badge-positive">{{user.name}}</span>
+    </ion-item>
+    <ion-item class="item item-icon-left">
+    <i class="icon ion-android-boat positive"></i>
+    <h2 translate="boat">Boat</h2>
+    <span class="badge badge-positive">{{user.boatname}}</span>
+    </ion-item>
+    <ion-item class="item item-icon-left" ng-if="currentuser.email != 'demo'">
+    <i class="icon ion-ios-telephone positive"></i>
+    <h2 translate="mobile">Mobile</h2>
+    <span class="badge badge-positive">{{user.email}}</span>
+    </ion-item>
+    <ion-item class="item item-icon-left">
+    <i class="icon ion-cash positive"></i>
+    <h2 translate="debt">Debt</h2>
+    <span class="badge badge-positive">{{user.debt}}</span>
+    </ion-item>
+    <ion-item class="item-icon-left positive"><i class="icon ion-ios-flag"></i><strong translate="language">Language</strong></ion-item>
+    <ion-radio class="item item-complex item-icon-left item-icon-right" ng-click="ChangeLanguage('{{l.code}}')" ng-value="'{{l.code}}'" ng-model="lang" ng-repeat="l in languages">
+    <i class="icon ion-ios-flag-outline positive"></i>
+    <h2>{{l.lang}}</h2>
+    </ion-radio>   
+<!--     <ion-radio ng-model="choice" ng-repeat="l in languages" ng-value="'{{l.code}}'">{{l.lang}}</ion-radio> -->
+  </ion-list>
+  </ion-content>
+</ion-view>

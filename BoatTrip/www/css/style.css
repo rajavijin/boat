@@ -1,4 +1,43 @@
 /* Empty. Add your own CSS if you like */
+.list .item, .title {
+  text-transform:capitalize;
+  white-space: normal;
+}
+.menu-list .item {
+  font-size: 15px;
+}
+.filters .submit {
+  border-bottom: 0px;
+}
+.home .list .item {
+  border-color: #7cb5ec;
+  margin: 0 2px;
+  border-width: 1px 1px 0;
+}
+.home .list .item.last {
+  border-width: 1px;
+}
+.center {
+    text-align: center;
+}
+.home .item-input .icon {
+  padding: 0 10px 0 0;
+  font-size: 20px;
+}
 .addtrip .input-label{width:60%;max-width:60%;line-height:1.43}
-.list .item h2 {line-height:1.44}
 .adduser .input-label{width:50%;max-width:50%;}
+.list .item h2 {line-height:1.44; white-space: normal;}
+.row .col.b-label {
+  display: table;
+  padding: 7px 10px 7px 0px;
+  max-width: 200px;
+  width: 35%;
+  color: #444;
+  font-size: 16px;
+}
+.has-errors i, .has-errors .input-label {
+    color: #ef473a;
+}
+.item-input.item-icon-left {
+  padding-left: 54px;
+}
