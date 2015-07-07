@@ -299,7 +299,7 @@ angular.module('starter.controllers', ['starter.services'])
     if(err.length > 0) {
       $scope.errors = err;
       var alertPopup = $ionicPopup.alert({
-       title: 'Errors',
+       title: $filter('translate')('errors'),
        scope:$scope,
        templateUrl: 'templates/errors.html'
       });
@@ -346,6 +346,7 @@ angular.module('starter.controllers', ['starter.services'])
       tripdetails.totalspending = tripdetails.diesel + tripdetails.ice + tripdetails.net + tripdetails.food + extra + tripdetails.bata;
       tripdetails.balance = parseInt((tripdetails.income - tripdetails.totalspending).toFixed(2));
 
+      tripdetails.debt = user.debt;
       if(tripdetails.balance < 0) {
         if(tripdetails.debttaken == 0) {
           tripdetails.debt = tripdetails.remainingdebt + (-(tripdetails.balance));
@@ -405,6 +406,7 @@ angular.module('starter.controllers', ['starter.services'])
       trip.startdate = new Date(trip.startdate);
       trip.enddate = new Date(trip.enddate);
       trip.remainingdebt = user.debt;
+      if(!trip.debttaken) trip.debttaken = 0;
       trip.lastDebt = trip.debttaken;
       if(trip.extra.length == 0) trip.extra = [{name:'',price:''}];
       $scope.addtrip = trip;
@@ -477,7 +479,7 @@ angular.module('starter.controllers', ['starter.services'])
       tripdetails.extratotal = extra;
       tripdetails.totalspending = tripdetails.diesel + tripdetails.ice + tripdetails.net + tripdetails.food + extra + tripdetails.bata;
       tripdetails.balance = parseInt((tripdetails.income - tripdetails.totalspending).toFixed(2));
-
+      tripdetails.debt = user.debt;
       if(tripdetails.balance < 0) {
         if(tripdetails.debttaken == 0) {
           tripdetails.debt = tripdetails.remainingdebt + (-(tripdetails.balance));
@@ -651,6 +653,7 @@ angular.module('starter.controllers', ['starter.services'])
   }
 })
 .controller('ProfileCtrl', function($scope, $rootScope, MyService, $translate) {
+  console.log("no stored user", user);
   $scope.languages = [{
     code: "en",
     lang: "English"
@@ -667,6 +670,7 @@ angular.module('starter.controllers', ['starter.services'])
     if(suser) {
       user = JSON.parse(suser);
     }
+    console.log("Boat user", user);
     $scope.user = user;
   }
 })

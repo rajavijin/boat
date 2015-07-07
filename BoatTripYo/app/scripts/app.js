@@ -21,6 +21,7 @@ var translations = {
     "smembers": "Please Select members",
     "dtrip": "Are you sure you want to delete this Trip?",
     "ntrips": "No Trips Added Yet",
+    "dempty": "Dashboard is Empty",
     "edit": "Edit",
     "users": "Users",
     "adduser": "Add User",
@@ -55,6 +56,7 @@ var translations = {
     "slevel": "Salary Level",
     "mobile": "Mobile",
     "submit": "Submit",
+    "errors": "Errors",
     "login": "Login",    
     "logout": "Logout"
   },
@@ -77,6 +79,7 @@ var translations = {
     "smembers": "தொழிலாளியை தேர்வுசெய்ய வேண்டும்",
     "dtrip": "கண்டிப்பாக டெலீட் செய்ய வேண்டுமா ?",
     "ntrips": "ஓட்டுகழ் இன்னும் பதிவு ஆகவில்லை",
+    "dempty": "எதுவும் இல்லை",
     "edit": "திருத்தம்",
     "users": "தொழிலாளிகள்",
     "adduser": "புதிய தொழிலாளி",
@@ -112,6 +115,7 @@ var translations = {
     "mobile": "மொபைல்",
     "login": "உள்நுழைய",
     "submit": "சேவ்",
+    "errors": "தவறுகள்",
     "logout": "வெளியேறு"
   }
 }

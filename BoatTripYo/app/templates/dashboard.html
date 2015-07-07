@@ -3,7 +3,7 @@
    <ion-content class="has-header">
       <ion-refresher pulling-text="Pull to refresh" on-refresh="getTrips()"></ion-refresher>
       <ion-list ng-if="dashboardStatus == 'empty'">
-         <ion-item class="item item-icon-left"><i class="icon ion-ios-list positive"></i>Dashboard is empty</item>
+         <ion-item class="item item-icon-left"><i class="icon ion-ios-list positive"></i><h2 translate="dempty">Dashboard is empty</h2></ion-item>
       </ion-list>
       <chart id="income" config="incomeConfig" ng-if="dashboardStatus != 'empty'"></chart>
       <div class="padding"></div>
