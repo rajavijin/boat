@@ -360,14 +360,30 @@ angular.module('starter.controllers', ['starter.services'])
            templateUrl: 'templates/errors.html'
           });
           alertPopup.then(function(res) {
+           $scope.addtrip.debttaken = 0;
            console.log('Errors alerted');
           });
           return;
         }
       } else {
         if(tripdetails.debttaken > 0) {
-          tripdetails.balance = tripdetails.balance - tripdetails.debttaken;
-          tripdetails.debt = tripdetails.remainingdebt - tripdetails.debttaken;
+          if(tripdetails.balance > tripdetails.debttaken) {
+            tripdetails.balance = tripdetails.balance - tripdetails.debttaken;
+            tripdetails.debt = tripdetails.remainingdebt - tripdetails.debttaken;
+          } else {
+            $scope.nodeduct = true;
+            $scope.balance = tripdetails.balance;
+            var alertPopup = $ionicPopup.alert({
+             title: $filter('translate')('errors'),
+             scope: $scope,
+             templateUrl: 'templates/errors.html'
+            });
+            alertPopup.then(function(res) {
+             $scope.addtrip.debttaken = tripdetails.balance;
+             console.log('Errors alerted');
+            });
+            return;    
+          }
         }
       }
       user.debt = tripdetails.debt;
@@ -519,8 +535,6 @@ angular.module('starter.controllers', ['starter.services'])
         } else {
           /*tripdetails.debt = tripdetails.remainingdebt - tripdetails.debttaken;
           tripdetails.balance = tripdetails.balance - tripdetails.debttaken;*/
-          console.log("Dont proceed");
-          $scope.errors = [];
           $scope.nodeduct = true;
           $scope.balance = tripdetails.balance;
           var alertPopup = $ionicPopup.alert({
@@ -529,6 +543,7 @@ angular.module('starter.controllers', ['starter.services'])
            templateUrl: 'templates/errors.html'
           });
           alertPopup.then(function(res) {
+           $scope.addtrip.debttaken = 0;
            console.log('Errors alerted');
           });
           return;
@@ -538,11 +553,26 @@ angular.module('starter.controllers', ['starter.services'])
           tripdetails.debt = tripdetails.remainingdebt - (-(tripdetails.lastbalance));
         }
         if(tripdetails.debttaken > 0) {
-          tripdetails.bablance = tripdetails.balance - tripdetails.debttaken;
-          if(tripdetails.remainingdebt == 0) {
-            tripdetails.debt = tripdetails.lastDebt - tripdetails.debttaken;
+          if(tripdetails.balance > tripdetails.debttaken) {
+            tripdetails.bablance = tripdetails.balance - tripdetails.debttaken;
+            if(tripdetails.remainingdebt == 0) {
+              tripdetails.debt = tripdetails.lastDebt - tripdetails.debttaken;
+            } else {
+              tripdetails.debt = tripdetails.remainingdebt - tripdetails.debttaken;
+            }
           } else {
-            tripdetails.debt = tripdetails.remainingdebt - tripdetails.debttaken;
+            $scope.nodeduct = true;
+            $scope.balance = tripdetails.balance;
+            var alertPopup = $ionicPopup.alert({
+             title: $filter('translate')('errors'),
+             scope: $scope,
+             templateUrl: 'templates/errors.html'
+            });
+            alertPopup.then(function(res) {
+             $scope.addtrip.debttaken = tripdetails.balance;
+             console.log('Errors alerted');
+            });
+            return;    
           }
         }
       }
