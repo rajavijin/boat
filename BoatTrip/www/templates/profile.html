@@ -1,5 +1,6 @@
 <ion-view cache-view="false" title="{{ 'profile' | translate }}" ng-init="getProfile()">
   <ion-content>
+  <ion-refresher pulling-text="Pull to refresh" on-refresh="getProfile()"></ion-refresher>
   <ion-list>
     <ion-item class="item item-icon-left">
     <i class="icon ion-person positive"></i>
@@ -21,7 +22,7 @@
     <h2 translate="debt">Debt</h2>
     <span class="badge badge-positive">{{user.debt}}</span>
     </ion-item>
-    <ion-item class="item-icon-left positive"><i class="icon ion-ios-flag"></i><strong translate="language">Language</strong></ion-item>
+    <ion-item class="item item-divider item-icon-left positive"><i class="icon ion-ios-flag"></i><strong translate="language">Language</strong></ion-item>
     <ion-radio class="item item-complex item-icon-left item-icon-right" ng-click="ChangeLanguage('{{l.code}}')" ng-value="'{{l.code}}'" ng-model="lang" ng-repeat="l in languages">
     <i class="icon ion-ios-flag-outline positive"></i>
     <h2>{{l.lang}}</h2>

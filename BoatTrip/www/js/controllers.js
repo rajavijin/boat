@@ -25,6 +25,9 @@ angular.module('starter.controllers', ['starter.services'])
     } else {
       $rootScope.filters = true;
     }
+    if((toState.name == "home") && (fromState.name == "logout")) {
+      location.reload(true);
+    }
   })
 })
 .controller('DashboardCtrl', function($scope, $rootScope, $state, $cordovaSQLite, $ionicLoading, MyService, $filter) {
@@ -213,16 +216,15 @@ angular.module('starter.controllers', ['starter.services'])
       if(MyService.online()) {
         var debtupdated = user.debt + $scope.trip.debttaken;
         if($scope.trip.balance < 0){
-          var debtupdated = user.debt + $scope.trip.balance;
+            var debtupdated = user.debt - ((-($scope.trip.balance)) - $scope.trip.debttaken);
         }
         
         MyService.deleteTrip({id:$stateParams.id,debt:debtupdated,boatid:user.boatid}).then(function(deleted) {
           user.debt = debtupdated;
           localStorage.setItem("user", JSON.stringify(user));
-          $state.go('app.dashboard', {}, {reload:true});
+          $state.go('app.trips', {}, {reload:true});
         })
       }
-       console.log('You are sure');
      } else {
        console.log('You are not sure');
      }
@@ -233,11 +235,9 @@ angular.module('starter.controllers', ['starter.services'])
       $ionicLoading.show({template:'<ion-spinner icon="lines" class="spinner-calm"></ion-spinner>'});
       MyService.getTrip({boatid:user.boatid,id:$stateParams.id}).then(function(trip) {
         if(trip) {
-          console.log("trip.diesel", trip.diesel);
           $scope.dashboardStatus = "not empty";
           trip.startdate = moment(trip.startdate).format("Do MMM YYYY");
           trip.enddate = moment(trip.enddate).format("Do MMM YYYY");
-          console.log("Trip", trip);
           $scope.trip = trip;
         } else {
           $scope.dashboardStatus = "empty";
@@ -251,7 +251,7 @@ angular.module('starter.controllers', ['starter.services'])
 })
 .controller('AddtripCtrl', function($scope, $rootScope, $state, $filter, $ionicSideMenuDelegate, $cordovaSQLite, $window, MyService, $ionicPopup) {
   var user = JSON.parse(localStorage.getItem("user"));
-  console.log("user", user);
+  $scope.action = "create";
   $ionicSideMenuDelegate.$getByHandle('right-menu').canDragContent(false);
   var addtrip = {members:{}};
   addtrip.boatid = user.boatid;
@@ -379,16 +379,21 @@ angular.module('starter.controllers', ['starter.services'])
         }
       };
 
-      console.log("TRIP DETAILS:", tripdetails);
       MyService.addTrip(tripdetails).then(function(tripval) {
-        $state.go('app.tripdashboard', {id:tripval._id}, {reload:true});
+        if(tripval.status == "blocked") {
+          $state.go('logout', {}, {reload:true});
+        } else {
+          $state.go('app.tripdashboard', {id:tripval._id}, {reload:true});
+        }
       })
     }
   }
 })
 .controller('EditTripCtrl', function($scope, $rootScope, $state, $filter, $ionicPopup, $stateParams, $ionicSideMenuDelegate, $cordovaSQLite, MyService, $ionicLoading) {
+  user = JSON.parse(localStorage.getItem("user"));
   $ionicSideMenuDelegate.$getByHandle('right-menu').canDragContent(false);
   $scope.members = user.members;
+  $scope.action = "update";
   $scope.createExtra = function() {
     $scope.addtrip.extra.push({name:'',price:''});
   }
@@ -404,9 +409,10 @@ angular.module('starter.controllers', ['starter.services'])
       }
       trip.startdate = new Date(trip.startdate);
       trip.enddate = new Date(trip.enddate);
-      trip.remainingdebt = user.debt + trip.debttaken;
       if(!trip.debttaken) trip.debttaken = 0;
+      trip.remainingdebt = user.debt + trip.debttaken;
       trip.lastDebt = trip.debttaken;
+      trip.lastbalance = trip.balance;
       if(trip.extra.length == 0) trip.extra = [{name:'',price:''}];
       $scope.addtrip = trip;
       $scope.title = $filter('translate')('edit')+" "+ trip.name;
@@ -486,14 +492,26 @@ angular.module('starter.controllers', ['starter.services'])
       tripdetails.totalspending = tripdetails.diesel + tripdetails.ice + tripdetails.net + tripdetails.food + extra + tripdetails.bata;
       tripdetails.balance = parseInt((tripdetails.income - tripdetails.totalspending).toFixed(2));
       tripdetails.debt = tripdetails.remainingdebt;
-      console.log("Remaining total", tripdetails.remainingdebt);
+      console.log("remaining debt", tripdetails.remainingdebt);
+      console.log("Last balance", tripdetails.lastbalance);
+      console.log("this trip balance", tripdetails.balance);
+      console.log("Last Dept", tripdetails.lastDebt);
+      console.log("Dept taken", tripdetails.debttaken);
       if(tripdetails.balance < 0) {
         if(tripdetails.debttaken == 0) {
-          tripdetails.debt = tripdetails.remainingdebt + (-(tripdetails.balance));
+          if(tripdetails.lastbalance < 0) {
+            tripdetails.debt = (tripdetails.remainingdebt - (-(tripdetails.lastbalance))) + (-(tripdetails.balance));
+          } else {
+            tripdetails.debt = tripdetails.remainingdebt - (tripdetails.balance);
+          }
         } else {
-          tripdetails.debt = (tripdetails.remainingdebt - tripdetails.debttaken) + (-(tripdetails.balance));
+          tripdetails.debt = tripdetails.remainingdebt - tripdetails.debttaken;
+          tripdetails.balance = tripdetails.balance - tripdetails.debttaken;
         }
       } else {
+        if(tripdetails.lastbalance < 0) {
+          tripdetails.debt = tripdetails.remainingdebt - (-(tripdetails.lastbalance));
+        }
         if(tripdetails.debttaken > 0) {
           tripdetails.balance = tripdetails.balance - tripdetails.debttaken;
           if(tripdetails.remainingdebt == 0) {
@@ -523,9 +541,10 @@ angular.module('starter.controllers', ['starter.services'])
         }
       };
       tripdetails.members = editedmembers;
-      console.log("Edit Trip details", tripdetails);
       MyService.updateTrip(tripdetails).then(function(updatedTrip) {
-        if(updatedTrip) {
+        if(updatedTrip.status == "blocked") {
+          $state.go('logout', {}, {reload:true});
+        } else {
           $state.go('app.tripdashboard', {id:updatedTrip._id}, {reload:true});
         }
       });
@@ -535,7 +554,6 @@ angular.module('starter.controllers', ['starter.services'])
 .controller('AllUsersCtrl', function($scope, MyService, $ionicLoading) {
   $scope.filterToggle = function() {$scope.filterStatus = !$scope.filterStatus;}
   $scope.getUsers = function() {
-    console.log("user", user);
     if(MyService.online()) {
       $ionicLoading.show({template:'<ion-spinner icon="lines" class="spinner-calm"></ion-spinner>'});
       MyService.getUsers({boatid:user.boatid}).then(function(users) {
@@ -578,7 +596,6 @@ angular.module('starter.controllers', ['starter.services'])
 })
 .controller('EditUserCtrl', function($scope, $state, $stateParams, MyService) {
   $scope.roles = ['worker','captain','vice-captain','cook'];
-  console.log("user.members", user.members);
   var index = 0;
   for (var i = 0; i < user.members.length; i++) {
     if($stateParams.id == user.members[i]._id) {
@@ -594,7 +611,6 @@ angular.module('starter.controllers', ['starter.services'])
   $scope.submit = function() {
     var uu = $scope.adduser;
     user.members[index] = uu;
-    console.log("user member", user.members[index]);
     localStorage.setItem("user", JSON.stringify(user));
     if(MyService.online()) {
       MyService.updateUser(uu).then(function(created) {
@@ -620,11 +636,9 @@ angular.module('starter.controllers', ['starter.services'])
     });
     confirmPopup.then(function(res) {
       if(res) {
-        console.log('You are sure');
         if(MyService.online()) {
           $scope.member.active = false;
           MyService.updateUser($scope.member).then(function(deleted) {
-            console.log("deleted", deleted);
             user.members.splice(index, 1);
             console.log("user", user.members);
             localStorage.setItem("user", JSON.stringify(user));
@@ -660,7 +674,6 @@ angular.module('starter.controllers', ['starter.services'])
   }
 })
 .controller('ProfileCtrl', function($scope, $rootScope, MyService, $translate) {
-  console.log("no stored user", user);
   $scope.languages = [{
     code: "en",
     lang: "English"
@@ -677,12 +690,13 @@ angular.module('starter.controllers', ['starter.services'])
     if(suser) {
       user = JSON.parse(suser);
     }
-    console.log("Boat user", user);
     $scope.user = user;
+    $scope.$broadcast('scroll.refreshComplete');
   }
 })
 
 .controller('HomeCtrl',function($scope, $rootScope, $state, $ionicUser, $ionicAnalytics, $ionicLoading, $cordovaSQLite, $cordovaDevice, MyService){
+
   $scope.user = {
     email: 'demo',
     password:'demo'

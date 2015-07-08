@@ -1,6 +1,6 @@
 angular.module('starter.services', [])
 .factory('MyService', function($rootScope, $ionicLoading, $ionicPopup, $state, $http, $q) {
-  var baseUrl = 'http://localhost:8100/api';
+  var baseUrl = 'http://52.25.97.15:9000/api';
   var loginEndpoint       = baseUrl +'/users/verify';
   var logoutEndpoint       = baseUrl +'/users/';
   var token = localStorage.getItem('token') || '';
@@ -43,12 +43,13 @@ angular.module('starter.services', [])
       .error(function (data, status, headers, config) {
         defer.reject(status);
         console.log("Login Status", status);
+        $ionicLoading.hide();
         var alertPopup = $ionicPopup.alert({
           title: 'Login failed!',
           template: 'Please check your credentials!'
         });
       });
-        return defer.promise;
+      return defer.promise;
     },
     logout: function(user) {
       var defer = $q.defer();
@@ -94,7 +95,6 @@ angular.module('starter.services', [])
     },
     getTrip: function(params) {
       var defer = $q.defer();
-      console.log("params", params.id);
       $http.get(baseUrl+'/trip/'+params.id)
       .success(function(data, status, headers, config){
         defer.resolve(data);

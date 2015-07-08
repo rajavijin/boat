@@ -14,6 +14,7 @@ angular.module('starter.services', [])
       $http
       .post(loginEndpoint, userData)
       .success(function (data, status, headers, config) {
+        console.log("data", data);
         console.log("Login Status:", status);
         var err = '';
         if(data.status == "password not matching") {
@@ -42,7 +43,10 @@ angular.module('starter.services', [])
       })
       .error(function (data, status, headers, config) {
         defer.reject(status);
+        console.log("data", data);
+
         console.log("Login Status", status);
+        $ionicLoading.hide();
         var alertPopup = $ionicPopup.alert({
           title: 'Login failed!',
           template: 'Please check your credentials!'
@@ -94,7 +98,6 @@ angular.module('starter.services', [])
     },
     getTrip: function(params) {
       var defer = $q.defer();
-      console.log("params", params.id);
       $http.get(baseUrl+'/trip/'+params.id)
       .success(function(data, status, headers, config){
         defer.resolve(data);

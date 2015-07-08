@@ -159,8 +159,6 @@ angular.module('starter', ['ionic', 'ngCordova', 'pascalprecht.translate', 'ioni
 
             if (attrs.source) {
               scope.$watch('search.value', function (newValue, oldValue) {
-                console.log('newValue', newValue);
-                console.log('oldValue', oldValue);
                   if (newValue.length > attrs.minLength) {
                     scope.getData({str: newValue}).then(function (results) {
                       scope.model = results;
@@ -218,19 +216,7 @@ angular.module('starter', ['ionic', 'ngCordova', 'pascalprecht.translate', 'ioni
         },
     };
 })
-.directive('focusMe', function($timeout) {
-  return {
-    link: function(scope, element, attrs) {
-      console.log("hellloooooo");
-      $timeout(function() {
-        element[0].focus(); 
-        if(ionic.Platform.isAndroid()){
-           cordova.plugins.Keyboard.show();
-        }
-      }, 150);
-    }
-  };
-})
+
 .config(function($stateProvider, $urlRouterProvider, $translateProvider) {
   $translateProvider.useSanitizeValueStrategy(null);
   for(lang in translations){

@@ -163,6 +163,8 @@ User.findOne({
           res.json({status:"blocked"});
         }
       })
+    } else {
+      return res.json(401);
     }
   }); 
 }

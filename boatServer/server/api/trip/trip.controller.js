@@ -49,6 +49,8 @@ exports.alltrips = function(req, res) {
 };
 // Creates a new trip in the DB.
 exports.create = function(req, res) {
+  //blocked
+  //res.json(200, {status:"blocked"});
   console.log("requested", req.body);
   Trip.create(req.body, function(err, trip) {
     if(err) { return handleError(res, err); }

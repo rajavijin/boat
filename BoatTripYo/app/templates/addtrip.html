@@ -38,7 +38,12 @@
     <span class="input-label" translate="food">Food</span>
     <input type="number" ng-model="addtrip.food">
   </label>
-  <label class="item item-input item-icon-left" ng-if="addtrip.remainingdebt || addtrip.lastDebt">
+  <label class="item item-input item-icon-left" ng-if="addtrip.remainingdebt && (action == 'create')">
+    <i class="icon ion-cash positive"></i>
+    <span class="input-label" translate="debt">Debt</span>
+    <input type="number" ng-model="addtrip.debttaken">
+  </label>
+    <label class="item item-input item-icon-left" ng-if="addtrip.lastDebt && (action == 'update')">
     <i class="icon ion-cash positive"></i>
     <span class="input-label" translate="debt">Debt</span>
     <input type="number" ng-model="addtrip.debttaken">
