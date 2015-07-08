@@ -520,6 +520,7 @@ angular.module('starter.controllers', ['starter.services'])
           /*tripdetails.debt = tripdetails.remainingdebt - tripdetails.debttaken;
           tripdetails.balance = tripdetails.balance - tripdetails.debttaken;*/
           console.log("Dont proceed");
+          $scope.errors = [];
           $scope.nodeduct = true;
           $scope.balance = tripdetails.balance;
           var alertPopup = $ionicPopup.alert({
