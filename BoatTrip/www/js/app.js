@@ -81,7 +81,7 @@ var translations = {
     "dtrip": "கண்டிப்பாக டெலீட் செய்ய வேண்டுமா ?",
     "ntrips": "ஓட்டுகழ் இன்னும் பதிவு ஆகவில்லை",
     "dempty": "எதுவும் இல்லை",
-    "ndeduct": "Your balance is too low to deduct debt",
+    "ndeduct": "வருமானம் குறைவாக உள்ளத்தால்  கடன் குறைக்க முடியாது",
     "edit": "திருத்தம்",
     "users": "தொழிலாளிகள்",
     "adduser": "புதிய தொழிலாளி",
