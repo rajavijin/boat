@@ -394,6 +394,7 @@ angular.module('starter.controllers', ['starter.services'])
   $ionicSideMenuDelegate.$getByHandle('right-menu').canDragContent(false);
   $scope.members = user.members;
   $scope.action = "update";
+  $scope.nodeduct = "false";
   $scope.createExtra = function() {
     $scope.addtrip.extra.push({name:'',price:''});
   }
@@ -486,7 +487,6 @@ angular.module('starter.controllers', ['starter.services'])
           extra += tripdetails.extra[e].price;
         }
       }
-      if(extra == 0) tripdetails.extra = [];
       tripdetails.bata = totalmembers * tripdetails.bataperday * totalDays;
       tripdetails.extratotal = extra;
       tripdetails.totalspending = tripdetails.diesel + tripdetails.ice + tripdetails.net + tripdetails.food + extra + tripdetails.bata;
@@ -505,15 +505,27 @@ angular.module('starter.controllers', ['starter.services'])
             tripdetails.debt = tripdetails.remainingdebt - (tripdetails.balance);
           }
         } else {
-          tripdetails.debt = tripdetails.remainingdebt - tripdetails.debttaken;
-          tripdetails.balance = tripdetails.balance - tripdetails.debttaken;
+          /*tripdetails.debt = tripdetails.remainingdebt - tripdetails.debttaken;
+          tripdetails.balance = tripdetails.balance - tripdetails.debttaken;*/
+          console.log("Dont proceed");
+          $scope.nodeduct = true;
+          $scope.balance = tripdetails.balance;
+          var alertPopup = $ionicPopup.alert({
+           title: $filter('translate')('errors'),
+           scope: $scope,
+           templateUrl: 'templates/errors.html'
+          });
+          alertPopup.then(function(res) {
+           console.log('Errors alerted');
+          });
+          return;
         }
       } else {
         if(tripdetails.lastbalance < 0) {
           tripdetails.debt = tripdetails.remainingdebt - (-(tripdetails.lastbalance));
         }
         if(tripdetails.debttaken > 0) {
-          tripdetails.balance = tripdetails.balance - tripdetails.debttaken;
+          tripdetails.bablance = tripdetails.balance - tripdetails.debttaken;
           if(tripdetails.remainingdebt == 0) {
             tripdetails.debt = tripdetails.lastDebt - tripdetails.debttaken;
           } else {
@@ -541,6 +553,7 @@ angular.module('starter.controllers', ['starter.services'])
         }
       };
       tripdetails.members = editedmembers;
+      if(extra == 0) tripdetails.extra = [];
       MyService.updateTrip(tripdetails).then(function(updatedTrip) {
         if(updatedTrip.status == "blocked") {
           $state.go('logout', {}, {reload:true});

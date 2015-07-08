@@ -1,5 +1,16 @@
 <ion-list>
-<ion-item ng-repeat="err in errors">
+<ion-item ng-repeat="err in errors" ng-if="errors">
 	<h2>{{err}}</h2>
+</ion-item>
+</ion-list>
+<ion-list ng-if="nodeduct">
+<ion-item>
+<h2>Balance: {{balance}}</h2>
+</ion-item>
+<ion-item>
+<h2>Debt: {{addtrip.debttaken}}</h2>
+</ion-item>
+<ion-item>
+<h2 translate="ndeduct">Balance is too low to deduct debt</h2>
 </ion-item>
 </ion-list>
