@@ -1,6 +1,6 @@
 angular.module('starter.services', [])
 .factory('MyService', function($rootScope, $ionicLoading, $ionicPopup, $state, $http, $q) {
-  var baseUrl = 'http://52.25.97.15:9000/api';
+  var baseUrl = 'http://localhost:8100/api';
   var loginEndpoint       = baseUrl +'/users/verify';
   var logoutEndpoint       = baseUrl +'/users/';
   var token = localStorage.getItem('token') || '';
@@ -14,6 +14,7 @@ angular.module('starter.services', [])
       $http
       .post(loginEndpoint, userData)
       .success(function (data, status, headers, config) {
+        console.log("data", data);
         console.log("Login Status:", status);
         var err = '';
         if(data.status == "password not matching") {
@@ -42,6 +43,8 @@ angular.module('starter.services', [])
       })
       .error(function (data, status, headers, config) {
         defer.reject(status);
+        console.log("data", data);
+
         console.log("Login Status", status);
         $ionicLoading.hide();
         var alertPopup = $ionicPopup.alert({
@@ -49,7 +52,7 @@ angular.module('starter.services', [])
           template: 'Please check your credentials!'
         });
       });
-      return defer.promise;
+        return defer.promise;
     },
     logout: function(user) {
       var defer = $q.defer();

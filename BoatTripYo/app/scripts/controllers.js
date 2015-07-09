@@ -216,7 +216,7 @@ angular.module('starter.controllers', ['starter.services'])
       if(MyService.online()) {
         var debtupdated = user.debt + $scope.trip.debttaken;
         if($scope.trip.balance < 0){
-          var debtupdated = user.debt + $scope.trip.balance;
+            var debtupdated = user.debt - ((-($scope.trip.balance)) - $scope.trip.debttaken);
         }
         
         MyService.deleteTrip({id:$stateParams.id,debt:debtupdated,boatid:user.boatid}).then(function(deleted) {
@@ -279,6 +279,7 @@ angular.module('starter.controllers', ['starter.services'])
   $scope.submit = function() {
     var err = [];
     var tripdetails = $scope.addtrip;
+    if(user.email == "demo") tripdetails.debttaken = 0;
     tripdetails.tripdate = moment(tripdetails.startdate).format("YYYY-MM-DD");
     if(MyService.isFutureDate(tripdetails.tripdate)) {
       err.push($filter('translate')('sdfuture'));
@@ -295,6 +296,9 @@ angular.module('starter.controllers', ['starter.services'])
     if(Object.keys(tripdetails.allmembers).length == 0) err.push($filter('translate')('smembers'));
     if(tripdetails.debttaken > tripdetails.remainingdebt) {
       err.push($filter('translate')('debtmore').replace("!val", tripdetails.remainingdebt));
+    }
+    if((tripdetails.diesel < 0) || (tripdetails.ice < 0) || (tripdetails.net < 0) || (tripdetails.food < 0) || (tripdetails.bataperday < 0) || (tripdetails.debttaken < 0)) {
+      err.push($filter('translate')('lessthanzero'));
     }
     if(err.length > 0) {
       $scope.errors = err;
@@ -340,7 +344,6 @@ angular.module('starter.controllers', ['starter.services'])
           extra += tripdetails.extra[e].price;
         }
       }
-      if(extra == 0) tripdetails.extra = [];
       tripdetails.bata = totalmembers * tripdetails.bataperday * totalDays;
       tripdetails.extratotal = extra;
       tripdetails.totalspending = tripdetails.diesel + tripdetails.ice + tripdetails.net + tripdetails.food + extra + tripdetails.bata;
@@ -351,12 +354,39 @@ angular.module('starter.controllers', ['starter.services'])
         if(tripdetails.debttaken == 0) {
           tripdetails.debt = tripdetails.remainingdebt + (-(tripdetails.balance));
         } else {
-          tripdetails.debt = (tripdetails.remainingdebt - tripdetails.debttaken) + (-(tripdetails.balance));
+          //tripdetails.debt = (tripdetails.remainingdebt - tripdetails.debttaken) + (-(tripdetails.balance));
+          $scope.nodeduct = true;
+          $scope.balance = tripdetails.balance;
+          var alertPopup = $ionicPopup.alert({
+           title: $filter('translate')('errors'),
+           scope: $scope,
+           templateUrl: 'templates/errors.html'
+          });
+          alertPopup.then(function(res) {
+           $scope.addtrip.debttaken = 0;
+           console.log('Errors alerted');
+          });
+          return;
         }
       } else {
         if(tripdetails.debttaken > 0) {
-          tripdetails.balance = tripdetails.balance - tripdetails.debttaken;
-          tripdetails.debt = tripdetails.remainingdebt - tripdetails.debttaken;
+          if(tripdetails.balance > tripdetails.debttaken) {
+            tripdetails.balance = tripdetails.balance - tripdetails.debttaken;
+            tripdetails.debt = tripdetails.remainingdebt - tripdetails.debttaken;
+          } else {
+            $scope.nodeduct = true;
+            $scope.balance = tripdetails.balance;
+            var alertPopup = $ionicPopup.alert({
+             title: $filter('translate')('errors'),
+             scope: $scope,
+             templateUrl: 'templates/errors.html'
+            });
+            alertPopup.then(function(res) {
+             $scope.addtrip.debttaken = tripdetails.balance;
+             console.log('Errors alerted');
+            });
+            return;    
+          }
         }
       }
       user.debt = tripdetails.debt;
@@ -379,6 +409,7 @@ angular.module('starter.controllers', ['starter.services'])
         }
       };
 
+      if(extra == 0) tripdetails.extra = [];
       MyService.addTrip(tripdetails).then(function(tripval) {
         if(tripval.status == "blocked") {
           $state.go('logout', {}, {reload:true});
@@ -390,9 +421,11 @@ angular.module('starter.controllers', ['starter.services'])
   }
 })
 .controller('EditTripCtrl', function($scope, $rootScope, $state, $filter, $ionicPopup, $stateParams, $ionicSideMenuDelegate, $cordovaSQLite, MyService, $ionicLoading) {
+  user = JSON.parse(localStorage.getItem("user"));
   $ionicSideMenuDelegate.$getByHandle('right-menu').canDragContent(false);
   $scope.members = user.members;
   $scope.action = "update";
+  $scope.nodeduct = "false";
   $scope.createExtra = function() {
     $scope.addtrip.extra.push({name:'',price:''});
   }
@@ -408,9 +441,10 @@ angular.module('starter.controllers', ['starter.services'])
       }
       trip.startdate = new Date(trip.startdate);
       trip.enddate = new Date(trip.enddate);
-      trip.remainingdebt = user.debt + trip.debttaken;
       if(!trip.debttaken) trip.debttaken = 0;
+      trip.remainingdebt = user.debt + trip.debttaken;
       trip.lastDebt = trip.debttaken;
+      trip.lastbalance = trip.balance;
       if(trip.extra.length == 0) trip.extra = [{name:'',price:''}];
       $scope.addtrip = trip;
       $scope.title = $filter('translate')('edit')+" "+ trip.name;
@@ -420,7 +454,7 @@ angular.module('starter.controllers', ['starter.services'])
   } else {
 
   }
-
+  $scope.nodeduct = false;
   $scope.submit = function() {
     var tripdetails =$scope.addtrip;
     var err = [];
@@ -440,6 +474,9 @@ angular.module('starter.controllers', ['starter.services'])
     if(Object.keys(tripdetails.allmembers).length == 0) err.push($filter('translate')('smembers'));
     if(tripdetails.debttaken > tripdetails.remainingdebt) {
       err.push($filter('translate')('debtmore').replace("!val", tripdetails.remainingdebt));
+    }
+    if((tripdetails.diesel < 0) || (tripdetails.ice < 0) || (tripdetails.net < 0) || (tripdetails.food < 0) || (tripdetails.bataperday < 0) || (tripdetails.debttaken < 0)) {
+      err.push($filter('translate')('lessthanzero'));
     }
     if(err.length > 0) {
       $scope.errors = err;
@@ -484,7 +521,6 @@ angular.module('starter.controllers', ['starter.services'])
           extra += tripdetails.extra[e].price;
         }
       }
-      if(extra == 0) tripdetails.extra = [];
       tripdetails.bata = totalmembers * tripdetails.bataperday * totalDays;
       tripdetails.extratotal = extra;
       tripdetails.totalspending = tripdetails.diesel + tripdetails.ice + tripdetails.net + tripdetails.food + extra + tripdetails.bata;
@@ -492,17 +528,51 @@ angular.module('starter.controllers', ['starter.services'])
       tripdetails.debt = tripdetails.remainingdebt;
       if(tripdetails.balance < 0) {
         if(tripdetails.debttaken == 0) {
-          tripdetails.debt = tripdetails.remainingdebt + (-(tripdetails.balance));
+          if(tripdetails.lastbalance < 0) {
+            tripdetails.debt = (tripdetails.remainingdebt - (-(tripdetails.lastbalance))) + (-(tripdetails.balance));
+          } else {
+            tripdetails.debt = tripdetails.remainingdebt - (tripdetails.balance);
+          }
         } else {
-          tripdetails.debt = (tripdetails.remainingdebt - tripdetails.debttaken) + (-(tripdetails.balance));
+          /*tripdetails.debt = tripdetails.remainingdebt - tripdetails.debttaken;
+          tripdetails.balance = tripdetails.balance - tripdetails.debttaken;*/
+          $scope.nodeduct = true;
+          $scope.balance = tripdetails.balance;
+          var alertPopup = $ionicPopup.alert({
+           title: $filter('translate')('errors'),
+           scope: $scope,
+           templateUrl: 'templates/errors.html'
+          });
+          alertPopup.then(function(res) {
+           $scope.addtrip.debttaken = 0;
+           console.log('Errors alerted');
+          });
+          return;
         }
       } else {
+        if(tripdetails.lastbalance < 0) {
+          tripdetails.debt = tripdetails.remainingdebt - (-(tripdetails.lastbalance));
+        }
         if(tripdetails.debttaken > 0) {
-          tripdetails.balance = tripdetails.balance - tripdetails.debttaken;
-          if(tripdetails.remainingdebt == 0) {
-            tripdetails.debt = tripdetails.lastDebt - tripdetails.debttaken;
+          if(tripdetails.balance > tripdetails.debttaken) {
+            tripdetails.balance = tripdetails.balance - tripdetails.debttaken;
+            if(tripdetails.remainingdebt == 0) {
+              tripdetails.debt = tripdetails.lastDebt - tripdetails.debttaken;
+            } else {
+              tripdetails.debt = tripdetails.remainingdebt - tripdetails.debttaken;
+            }
           } else {
-            tripdetails.debt = tripdetails.remainingdebt - tripdetails.debttaken;
+            $scope.nodeduct = true;
+            $scope.balance = tripdetails.balance;
+            var alertPopup = $ionicPopup.alert({
+             title: $filter('translate')('errors'),
+             scope: $scope,
+             templateUrl: 'templates/errors.html'
+            });
+            alertPopup.then(function(res) {
+             $scope.addtrip.debttaken = tripdetails.balance;
+            });
+            return;    
           }
         }
       }
@@ -526,6 +596,7 @@ angular.module('starter.controllers', ['starter.services'])
         }
       };
       tripdetails.members = editedmembers;
+      if(extra == 0) tripdetails.extra = [];
       MyService.updateTrip(tripdetails).then(function(updatedTrip) {
         if(updatedTrip.status == "blocked") {
           $state.go('logout', {}, {reload:true});
@@ -625,7 +696,6 @@ angular.module('starter.controllers', ['starter.services'])
           $scope.member.active = false;
           MyService.updateUser($scope.member).then(function(deleted) {
             user.members.splice(index, 1);
-            console.log("user", user.members);
             localStorage.setItem("user", JSON.stringify(user));
             $state.go('app.users', {}, {reload:true});
           }, function(err) {
@@ -671,22 +741,17 @@ angular.module('starter.controllers', ['starter.services'])
     $translate.use(lang);
   }
   $scope.getProfile = function() {
-    var suser = localStorage.getItem("user");
-    if(suser) {
-      user = JSON.parse(suser);
-    }
+    var user = JSON.parse(localStorage.getItem("user"));
     $scope.user = user;
+    $scope.$broadcast('scroll.refreshComplete');
   }
 })
 
 .controller('HomeCtrl',function($scope, $rootScope, $state, $ionicUser, $ionicAnalytics, $ionicLoading, $cordovaSQLite, $cordovaDevice, MyService){
+
   $scope.user = {
     email: 'demo',
     password:'demo'
-  }
-  $scope.user = {
-    email: '9988776655',
-    password:'i1u7hkt9'
   }
   $scope.login = function() { 
     if (($scope.user.email == null) || ($scope.user.password == null)) {

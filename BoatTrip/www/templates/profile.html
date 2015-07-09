@@ -17,13 +17,13 @@
     <h2 translate="mobile">Mobile</h2>
     <span class="badge badge-positive">{{user.email}}</span>
     </ion-item>
-    <ion-item class="item item-icon-left">
+    <ion-item class="item item-icon-left" ng-if="currentuser.email != 'demo'">
     <i class="icon ion-cash positive"></i>
     <h2 translate="debt">Debt</h2>
     <span class="badge badge-positive">{{user.debt}}</span>
     </ion-item>
-    <ion-item class="item item-divider item-icon-left positive"><i class="icon ion-ios-flag"></i><strong translate="language">Language</strong></ion-item>
-    <ion-radio class="item item-complex item-icon-left item-icon-right" ng-click="ChangeLanguage('{{l.code}}')" ng-value="'{{l.code}}'" ng-model="lang" ng-repeat="l in languages">
+    <ion-item class="item item-icon-left positive"><i class="icon ion-ios-flag"></i><strong translate="language">Language</strong></ion-item>
+    <ion-radio class="item item-complex item-icon-left item-icon-right positive" ng-click="ChangeLanguage('{{l.code}}')" ng-value="'{{l.code}}'" ng-model="lang" ng-repeat="l in languages">
     <i class="icon ion-ios-flag-outline positive"></i>
     <h2>{{l.lang}}</h2>
     </ion-radio>   

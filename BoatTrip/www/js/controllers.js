@@ -279,6 +279,7 @@ angular.module('starter.controllers', ['starter.services'])
   $scope.submit = function() {
     var err = [];
     var tripdetails = $scope.addtrip;
+    if(user.email == "demo") tripdetails.debttaken = 0;
     tripdetails.tripdate = moment(tripdetails.startdate).format("YYYY-MM-DD");
     if(MyService.isFutureDate(tripdetails.tripdate)) {
       err.push($filter('translate')('sdfuture'));
@@ -295,6 +296,9 @@ angular.module('starter.controllers', ['starter.services'])
     if(Object.keys(tripdetails.allmembers).length == 0) err.push($filter('translate')('smembers'));
     if(tripdetails.debttaken > tripdetails.remainingdebt) {
       err.push($filter('translate')('debtmore').replace("!val", tripdetails.remainingdebt));
+    }
+    if((tripdetails.diesel < 0) || (tripdetails.ice < 0) || (tripdetails.net < 0) || (tripdetails.food < 0) || (tripdetails.bataperday < 0) || (tripdetails.debttaken < 0)) {
+      err.push($filter('translate')('lessthanzero'));
     }
     if(err.length > 0) {
       $scope.errors = err;
@@ -351,7 +355,6 @@ angular.module('starter.controllers', ['starter.services'])
           tripdetails.debt = tripdetails.remainingdebt + (-(tripdetails.balance));
         } else {
           //tripdetails.debt = (tripdetails.remainingdebt - tripdetails.debttaken) + (-(tripdetails.balance));
-          console.log("Dont proceed");
           $scope.nodeduct = true;
           $scope.balance = tripdetails.balance;
           var alertPopup = $ionicPopup.alert({
@@ -451,7 +454,7 @@ angular.module('starter.controllers', ['starter.services'])
   } else {
 
   }
-
+  $scope.nodeduct = false;
   $scope.submit = function() {
     var tripdetails =$scope.addtrip;
     var err = [];
@@ -471,6 +474,9 @@ angular.module('starter.controllers', ['starter.services'])
     if(Object.keys(tripdetails.allmembers).length == 0) err.push($filter('translate')('smembers'));
     if(tripdetails.debttaken > tripdetails.remainingdebt) {
       err.push($filter('translate')('debtmore').replace("!val", tripdetails.remainingdebt));
+    }
+    if((tripdetails.diesel < 0) || (tripdetails.ice < 0) || (tripdetails.net < 0) || (tripdetails.food < 0) || (tripdetails.bataperday < 0) || (tripdetails.debttaken < 0)) {
+      err.push($filter('translate')('lessthanzero'));
     }
     if(err.length > 0) {
       $scope.errors = err;
@@ -520,11 +526,6 @@ angular.module('starter.controllers', ['starter.services'])
       tripdetails.totalspending = tripdetails.diesel + tripdetails.ice + tripdetails.net + tripdetails.food + extra + tripdetails.bata;
       tripdetails.balance = parseInt((tripdetails.income - tripdetails.totalspending).toFixed(2));
       tripdetails.debt = tripdetails.remainingdebt;
-      console.log("remaining debt", tripdetails.remainingdebt);
-      console.log("Last balance", tripdetails.lastbalance);
-      console.log("this trip balance", tripdetails.balance);
-      console.log("Last Dept", tripdetails.lastDebt);
-      console.log("Dept taken", tripdetails.debttaken);
       if(tripdetails.balance < 0) {
         if(tripdetails.debttaken == 0) {
           if(tripdetails.lastbalance < 0) {
@@ -554,7 +555,7 @@ angular.module('starter.controllers', ['starter.services'])
         }
         if(tripdetails.debttaken > 0) {
           if(tripdetails.balance > tripdetails.debttaken) {
-            tripdetails.bablance = tripdetails.balance - tripdetails.debttaken;
+            tripdetails.balance = tripdetails.balance - tripdetails.debttaken;
             if(tripdetails.remainingdebt == 0) {
               tripdetails.debt = tripdetails.lastDebt - tripdetails.debttaken;
             } else {
@@ -570,7 +571,6 @@ angular.module('starter.controllers', ['starter.services'])
             });
             alertPopup.then(function(res) {
              $scope.addtrip.debttaken = tripdetails.balance;
-             console.log('Errors alerted');
             });
             return;    
           }
@@ -696,7 +696,6 @@ angular.module('starter.controllers', ['starter.services'])
           $scope.member.active = false;
           MyService.updateUser($scope.member).then(function(deleted) {
             user.members.splice(index, 1);
-            console.log("user", user.members);
             localStorage.setItem("user", JSON.stringify(user));
             $state.go('app.users', {}, {reload:true});
           }, function(err) {
@@ -742,10 +741,7 @@ angular.module('starter.controllers', ['starter.services'])
     $translate.use(lang);
   }
   $scope.getProfile = function() {
-    var suser = localStorage.getItem("user");
-    if(suser) {
-      user = JSON.parse(suser);
-    }
+    var user = JSON.parse(localStorage.getItem("user"));
     $scope.user = user;
     $scope.$broadcast('scroll.refreshComplete');
   }
@@ -756,10 +752,6 @@ angular.module('starter.controllers', ['starter.services'])
   $scope.user = {
     email: 'demo',
     password:'demo'
-  }
-  $scope.user = {
-    email: '9988776655',
-    password:'i1u7hkt9'
   }
   $scope.login = function() { 
     if (($scope.user.email == null) || ($scope.user.password == null)) {
